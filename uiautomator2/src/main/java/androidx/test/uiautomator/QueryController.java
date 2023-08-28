@@ -28,7 +28,7 @@ import java.util.concurrent.TimeoutException;
  * The QueryController main purpose is to translate a {@link UiSelector} selectors to
  * {@link AccessibilityNodeInfo}. This is all this controller does.
  */
-class QueryController {
+public class QueryController {
 
    /**
     * This value has the greatest bearing on the appearance of test execution speeds.
@@ -174,7 +174,7 @@ class QueryController {
      * retry every 250ms for up to 1000ms.
      * @return null if no root node is obtained
      */
-    AccessibilityNodeInfo getRootNode() {
+    public AccessibilityNodeInfo getRootNode() {
         final int maxRetry = 6;
         long waitInterval = 250;
         AccessibilityNodeInfo rootNode = null;

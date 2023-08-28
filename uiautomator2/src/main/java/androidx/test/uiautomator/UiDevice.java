@@ -19,7 +19,6 @@ package androidx.test.uiautomator;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
-import android.app.Service;
 import android.app.UiAutomation;
 import android.app.UiAutomation.AccessibilityEventFilter;
 import android.content.Context;
@@ -28,7 +27,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
@@ -69,6 +67,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
+import mirror.android.hardware.display.DisplayManagerGlobal;
+import uiautomator.InstrumentShellWrapper;
+
 /**
  * UiDevice provides access to state information about the device.
  * You can also use this class to simulate user actions on the device,
@@ -91,7 +92,7 @@ public class UiDevice implements Searchable {
     private final Instrumentation mInstrumentation;
     private final QueryController mQueryController;
     private final InteractionController mInteractionController;
-    private final DisplayManager mDisplayManager;
+//    private final DisplayManager mDisplayManager;
     private final WaitMixin<UiDevice> mWaitMixin = new WaitMixin<>(this);
 
     // Track accessibility service flags to determine when the underlying connection has changed.
@@ -106,13 +107,14 @@ public class UiDevice implements Searchable {
     private final List<String> mWatchersTriggers = new ArrayList<>();
     private boolean mInWatcherContext = false;
 
+    private InstrumentShellWrapper mAutomationWrapper = InstrumentShellWrapper.getInstance();
     /** Private constructor. Clients should use {@link UiDevice#getInstance(Instrumentation)}. */
     UiDevice(Instrumentation instrumentation) {
         mInstrumentation = instrumentation;
         mQueryController = new QueryController(this);
         mInteractionController = new InteractionController(this);
-        mDisplayManager = (DisplayManager) instrumentation.getContext().getSystemService(
-                Service.DISPLAY_SERVICE);
+//        mDisplayManager = (DisplayManager) instrumentation.getContext().getSystemService(
+//                Service.DISPLAY_SERVICE);
     }
 
     boolean isInWatcherContext() {
@@ -285,7 +287,7 @@ public class UiDevice implements Searchable {
      * @return UiDevice instance
      */
     @NonNull
-    public static UiDevice getInstance(@NonNull Instrumentation instrumentation) {
+    public static UiDevice getInstance(/*@NonNull*/ Instrumentation instrumentation) {
         if (sInstance == null) {
             sInstance = new UiDevice(instrumentation);
         }
@@ -1154,9 +1156,9 @@ public class UiDevice implements Searchable {
     public void dumpWindowHierarchy(@NonNull String fileName) {
 
         File dumpFile = new File(fileName);
-        if (!dumpFile.isAbsolute()) {
-            dumpFile = mInstrumentation.getContext().getFileStreamPath(fileName);
-        }
+//        if (!dumpFile.isAbsolute()) {
+//            dumpFile = mInstrumentation.getContext().getFileStreamPath(fileName);
+//        }
         try {
             dumpWindowHierarchy(dumpFile);
         } catch (IOException e) {
@@ -1333,7 +1335,9 @@ public class UiDevice implements Searchable {
     }
 
     Display getDisplayById(int displayId) {
-        return mDisplayManager.getDisplay(displayId);
+//        return mDisplayManager.getDisplay(displayId);
+        Object displayManager = DisplayManagerGlobal.getInstance.call();
+        return DisplayManagerGlobal.getRealDisplay.call(displayManager, displayId);
     }
 
     /**
@@ -1393,10 +1397,13 @@ public class UiDevice implements Searchable {
     }
 
     Instrumentation getInstrumentation() {
-        return mInstrumentation;
+//        return mInstrumentation;
+        return null;
     }
 
     Context getUiContext(int displayId) {
+        return null;
+        /*
         Context context = mUiContexts.get(displayId);
         if (context == null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -1414,18 +1421,19 @@ public class UiDevice implements Searchable {
             mUiContexts.put(displayId, context);
         }
         return context;
+         */
     }
 
-    UiAutomation getUiAutomation() {
+    public UiAutomation getUiAutomation() {
         UiAutomation uiAutomation;
         int flags = Configurator.getInstance().getUiAutomationFlags();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            uiAutomation = Api24Impl.getUiAutomationWithRetry(getInstrumentation(), flags);
+            uiAutomation = Api24Impl.getUiAutomationWithRetry(mAutomationWrapper, flags);
         } else {
             if (flags != Configurator.DEFAULT_UIAUTOMATION_FLAGS) {
                 Log.w(TAG, "UiAutomation flags not supported prior to API 24");
             }
-            uiAutomation = getInstrumentation().getUiAutomation();
+            uiAutomation = mAutomationWrapper.getUiAutomation();
         }
 
         if (uiAutomation == null) {
@@ -1457,11 +1465,11 @@ public class UiDevice implements Searchable {
         return uiAutomation;
     }
 
-    QueryController getQueryController() {
+    public QueryController getQueryController() {
         return mQueryController;
     }
 
-    InteractionController getInteractionController() {
+    public InteractionController getInteractionController() {
         return mInteractionController;
     }
 
@@ -1496,6 +1504,22 @@ public class UiDevice implements Searchable {
             UiAutomation uiAutomation = null;
             for (int i = 0; i < MAX_UIAUTOMATION_RETRY; i++) {
                 uiAutomation = instrumentation.getUiAutomation(flags);
+                if (uiAutomation != null) {
+                    break;
+                }
+                if (i < MAX_UIAUTOMATION_RETRY - 1) {
+                    Log.e(TAG, "Got null UiAutomation from instrumentation - Retrying...");
+                    SystemClock.sleep(UIAUTOMATION_RETRY_INTERVAL);
+                }
+            }
+            return uiAutomation;
+        }
+
+        @DoNotInline
+        static UiAutomation getUiAutomationWithRetry(InstrumentShellWrapper wrapper, int flags) {
+            UiAutomation uiAutomation = null;
+            for (int i = 0; i < MAX_UIAUTOMATION_RETRY; i++) {
+                uiAutomation = wrapper.getUiAutomation(flags);
                 if (uiAutomation != null) {
                     break;
                 }

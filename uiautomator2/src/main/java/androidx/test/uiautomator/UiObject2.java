@@ -46,6 +46,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import proxy.Bridge;
+
 /**
  * Represents a UI element, and exposes methods for performing gestures (clicks, swipes) or
  * searching through its children.
@@ -100,8 +102,12 @@ public class UiObject2 implements Searchable {
         } else {
             mDisplayId = Display.DEFAULT_DISPLAY;
         }
+
+        /*
         Context uiContext = device.getUiContext(mDisplayId);
         int densityDpi = uiContext.getResources().getConfiguration().densityDpi;
+         */
+        int densityDpi = Bridge.getInstance().getDisplayDensityDpi(mDisplayId);
         mDisplayDensity = (float) densityDpi / DisplayMetrics.DENSITY_DEFAULT;
     }
 
@@ -884,10 +890,12 @@ public class UiObject2 implements Searchable {
      * @return {@code true} if the object can still scroll in the given direction.
      */
     public boolean fling(@NonNull Direction direction, final int speed) {
+        /*
         ViewConfiguration vc = ViewConfiguration.get(getDevice().getUiContext(getDisplayId()));
         if (speed < vc.getScaledMinimumFlingVelocity()) {
             throw new IllegalArgumentException("Speed is less than the minimum fling velocity");
         }
+         */
 
         // To fling, we swipe in the opposite direction
         final Direction swipeDirection = Direction.reverse(direction);
@@ -975,7 +983,7 @@ public class UiObject2 implements Searchable {
      */
     @SuppressLint("SoonBlockedPrivateApi") // Only used in API 28
     private void clearCache() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= 33/*Build.VERSION_CODES.TIRAMISU*/) {
             Log.d(TAG, String.format("clearCache() reflection is not available on API >= 33,"
                     + " current API: %d", Build.VERSION.SDK_INT));
             return;
