@@ -1,0 +1,33 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'androidx.test.uiautomator'
+    compileSdk 31
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 28
+        versionCode 1
+        versionName "2.2"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation project(path: ':uicore')
+    implementation("androidx.annotation:annotation:1.4.0")
+    implementation("androidx.tracing:tracing:1.1.0")
+    testImplementation 'junit:junit:4.13.2'
+}
