@@ -1,9 +1,9 @@
-package com.genymobile.scrcpy.wrappers;
+package proxy.wrappers;
+
+import android.os.IInterface;
 
 import com.genymobile.scrcpy.DisplayInfo;
 import com.genymobile.scrcpy.Size;
-
-import android.os.IInterface;
 
 public final class DisplayManager {
     private final IInterface manager;

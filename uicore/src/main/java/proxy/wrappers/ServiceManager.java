@@ -1,4 +1,4 @@
-package com.genymobile.scrcpy.wrappers;
+package proxy.wrappers;
 
 import android.annotation.SuppressLint;
 import android.os.IBinder;

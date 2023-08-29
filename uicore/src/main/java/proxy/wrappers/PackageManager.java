@@ -1,4 +1,4 @@
-package com.genymobile.scrcpy.wrappers;
+package proxy.wrappers;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
