@@ -16,4 +16,6 @@ public class DisplayManagerGlobal {
 
     @MethodParams({int.class})
     public static RefMethod<Display> getRealDisplay;
+
+    public static RefMethod<int[]> getDisplayIds;
 }

@@ -232,6 +232,42 @@ public class AccessibilityNodeInfoDumper {
         return "";
     }
 
+    public static String dumpWindows(List<AccessibilityWindowInfo> windows, int displayId) throws DumpWindowException, IOException {
+        if (windows.isEmpty()) {
+            throw new DumpWindowException("windows empty");
+        }
+        Object displayManager = DisplayManagerGlobal.getInstance.call();
+        Display display = DisplayManagerGlobal.getRealDisplay.call(displayManager, displayId);
+        final long startTime = SystemClock.uptimeMillis();
+        try {
+            XmlSerializer serializer = Xml.newSerializer();
+            StringWriter stringWriter = new StringWriter();
+            serializer.setOutput(stringWriter);
+            serializer.startDocument("UTF-8", true);
+            serializer.startTag("", "displays");
+
+
+            serializer.startTag("", "display");
+            serializer.attribute("", "id", Integer.toString(displayId));
+            int rotation = display.getRotation();
+            Point size = new Point();
+            display.getRealSize(size);
+            for (int i = 0, n = windows.size(); i < n; ++i) {
+                dumpWindowRec(windows.get(i), serializer, i, size.x, size.y, rotation);
+            }
+            serializer.endTag("", "display");
+            serializer.endTag("", "displays");
+            serializer.endDocument();
+            return stringWriter.toString();
+        } catch (IOException e) {
+            Log.e(LOGTAG, "failed to dump window to file", e);
+            throw e;
+        } finally {
+            final long endTime = SystemClock.uptimeMillis();
+            Log.w(LOGTAG, "Fetch time: " + (endTime - startTime) + "ms");
+        }
+    }
+
     private static void dumpWindowRec(AccessibilityWindowInfo winfo, XmlSerializer serializer,
             int index, int width, int height, int rotation) throws IOException {
         serializer.startTag("", "window");
@@ -419,5 +455,11 @@ public class AccessibilityNodeInfoDumper {
                 ret.append(ch);
         }
         return ret.toString();
+    }
+
+    public static final class DumpWindowException extends Exception {
+        public DumpWindowException(String message) {
+            super(message);
+        }
     }
 }
