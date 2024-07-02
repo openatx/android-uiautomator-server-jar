@@ -54,6 +54,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
+import mirror.android.hardware.display.DisplayManagerGlobal;
+import uiautomator.InstrumentShellWrapper;
+
 /**
  * UiDevice provides access to state information about the device.
  * You can also use this class to simulate user actions on the device,
@@ -85,7 +88,6 @@ public class UiDevice implements Searchable {
 
     // Get wait functionality from a mixin
     private WaitMixin<UiDevice> mWaitMixin = new WaitMixin<UiDevice>(this);
-
 
     /**
      * A forward-looking API Level for development platform builds
@@ -258,7 +260,7 @@ public class UiDevice implements Searchable {
      */
     public static UiDevice getInstance(Instrumentation instrumentation) {
         if (sInstance == null) {
-            sInstance = new UiDevice(instrumentation);
+            sInstance = new UiDevice(InstrumentShellWrapper.getInstance());
         }
         return sInstance;
     }
@@ -910,9 +912,9 @@ public class UiDevice implements Searchable {
         Tracer.trace(fileName);
 
         File dumpFile = new File(fileName);
-        if (!dumpFile.isAbsolute()) {
-            dumpFile = mInstrumentation.getContext().getFileStreamPath(fileName);
-        }
+//        if (!dumpFile.isAbsolute()) {
+//            dumpFile = mInstrumentation.getContext().getFileStreamPath(fileName);
+//        }
         try {
             dumpWindowHierarchy(dumpFile);
         } catch (IOException e) {
@@ -1052,6 +1054,9 @@ public class UiDevice implements Searchable {
      * @return package name of the default launcher
      */
     public String getLauncherPackageName() {
+        if (true) {
+            return "";
+        }
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         PackageManager pm = mInstrumentation.getContext().getPackageManager();
@@ -1126,25 +1131,27 @@ public class UiDevice implements Searchable {
     static UiAutomation getUiAutomation(final Instrumentation instrumentation) {
         int flags = Configurator.getInstance().getUiAutomationFlags();
         if (UiDevice.API_LEVEL_ACTUAL > Build.VERSION_CODES.M) {
-            return instrumentation.getUiAutomation(flags);
+//            return instrumentation.getUiAutomation(flags);
+            return InstrumentShellWrapper.getInstance().getUiAutomation(flags);
         } else {
             // Custom flags not supported prior to N.
             if (flags != Configurator.DEFAULT_UIAUTOMATION_FLAGS) {
                 Log.w(LOG_TAG, "UiAutomation flags not supported prior to N - ignoring.");
             }
-            return instrumentation.getUiAutomation();
+//            return instrumentation.getUiAutomation();
+            return InstrumentShellWrapper.getInstance().getUiAutomation();
         }
     }
 
-    UiAutomation getUiAutomation() {
+    public UiAutomation getUiAutomation() {
         return getUiAutomation(getInstrumentation());
     }
 
-    QueryController getQueryController() {
+    public QueryController getQueryController() {
         return mQueryController;
     }
 
-    InteractionController getInteractionController() {
+    public InteractionController getInteractionController() {
         return mInteractionController;
     }
 }
