@@ -101,8 +101,8 @@ public class AutomatorServiceImpl implements AutomatorService {
         // The problem is after set flags |= 8, the service always crash.
         // configurator.setUiAutomationFlags(configurator.getUiAutomationFlags() | AccessibilityServiceInfoCompat.FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY);
 
-        mInstrumentation = InstrumentationRegistry.getInstrumentation();
-        uiAutomation = mInstrumentation.getUiAutomation();
+        mInstrumentation = InstrumentShellWrapper.getInstance();
+        uiAutomation = UiDevice.getInstance(mInstrumentation).getUiAutomation();
 
         //uiAutomation.setOnAccessibilityEventListener(new AccessibilityEventListener(device, watchers));
 
@@ -112,7 +112,8 @@ public class AutomatorServiceImpl implements AutomatorService {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                AutomatorServiceImpl.this.clipboard = (ClipboardManager) mInstrumentation.getTargetContext().getSystemService(Context.CLIPBOARD_SERVICE);
+//                AutomatorServiceImpl.this.clipboard = (ClipboardManager) mInstrumentation.getTargetContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                AutomatorServiceImpl.this.clipboard = (ClipboardManager) mInstrumentation.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
             }
         });
         // play music when loaded
