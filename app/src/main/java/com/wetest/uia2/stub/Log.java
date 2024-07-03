@@ -21,7 +21,7 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.uiautomator.stub;
+package com.wetest.uia2.stub;
 
 public class Log {
     public static final String TAG = "UIAutomatorStub";

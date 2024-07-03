@@ -21,9 +21,10 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.uiautomator.stub;
+package com.wetest.uia2.stub;
 
 import android.os.RemoteException;
+
 import androidx.test.uiautomator.UiObjectNotFoundException;
 
 import com.github.uiautomator.exceptions.NotImplementedException;

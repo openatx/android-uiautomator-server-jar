@@ -21,7 +21,7 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.uiautomator.stub.watcher;
+package com.wetest.uia2.stub.watcher;
 
 import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiSelector;

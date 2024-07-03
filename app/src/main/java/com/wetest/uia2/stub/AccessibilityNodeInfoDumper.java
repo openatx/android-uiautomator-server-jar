@@ -1,6 +1,5 @@
-package com.github.uiautomator.stub;
+package com.wetest.uia2.stub;
 
-import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.UiAutomation;
 import android.os.Build;
 import android.util.Log;

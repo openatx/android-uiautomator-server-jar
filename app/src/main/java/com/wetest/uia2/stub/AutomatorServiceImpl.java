@@ -21,7 +21,7 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.uiautomator.stub;
+package com.wetest.uia2.stub;
 
 import android.app.Instrumentation;
 import android.app.UiAutomation;

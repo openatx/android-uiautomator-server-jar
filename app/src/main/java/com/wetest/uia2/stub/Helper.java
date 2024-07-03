@@ -1,4 +1,4 @@
-package com.github.uiautomator.stub;
+package com.wetest.uia2.stub;
 
 import android.app.ActivityManager;
 import android.content.Context;

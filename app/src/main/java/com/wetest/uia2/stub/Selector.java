@@ -21,7 +21,7 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.uiautomator.stub;
+package com.wetest.uia2.stub;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.uiautomator.By;

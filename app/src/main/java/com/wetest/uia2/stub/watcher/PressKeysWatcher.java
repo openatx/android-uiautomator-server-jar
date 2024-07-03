@@ -21,13 +21,15 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.uiautomator.stub.watcher;
+package com.wetest.uia2.stub.watcher;
 
 import android.os.RemoteException;
-import androidx.test.InstrumentationRegistry;
 import android.view.KeyEvent;
+
+import androidx.test.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiSelector;
+
 import com.github.uiautomator.stub.Log;
 
 /**
@@ -37,7 +39,7 @@ import com.github.uiautomator.stub.Log;
  * Time: 4:24 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PressKeysWatcher extends SelectorWatcher{
+public class PressKeysWatcher extends SelectorWatcher {
     private String[] keys = new String[]{};
     private UiDevice device = null;
 

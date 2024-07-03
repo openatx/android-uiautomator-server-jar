@@ -1,4 +1,4 @@
-package com.github.uiautomator.stub;
+package com.wetest.uia2.stub;
 
 import android.app.Instrumentation;
 import android.app.Service;
@@ -6,13 +6,13 @@ import android.app.UiAutomation;
 import android.content.Context;
 import android.os.PowerManager;
 import android.os.SystemClock;
-import androidx.test.uiautomator.Configurator;
-import androidx.test.uiautomator.UiDevice;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.InputEvent;
 import android.view.KeyCharacterMap;
 import android.view.MotionEvent;
+
+import androidx.test.uiautomator.Configurator;
 
 public class TouchController {
     private static final String LOG_TAG = TouchController.class.getSimpleName();
@@ -40,7 +40,7 @@ public class TouchController {
 
     public boolean touchDown(float x, float y) {
         if (DEBUG) {
-            android.util.Log.d(LOG_TAG, "touchDown (" + x + ", " + y + ")");
+            Log.d(LOG_TAG, "touchDown (" + x + ", " + y + ")");
         }
         mDownTime = SystemClock.uptimeMillis();
         MotionEvent event = getMotionEvent(mDownTime, mDownTime, MotionEvent.ACTION_DOWN, x, y);
@@ -49,7 +49,7 @@ public class TouchController {
 
     public boolean touchUp(float x, float y) {
         if (DEBUG) {
-            android.util.Log.d(LOG_TAG, "touchUp (" + x + ", " + y + ")");
+            Log.d(LOG_TAG, "touchUp (" + x + ", " + y + ")");
         }
         final long eventTime = SystemClock.uptimeMillis();
         MotionEvent event = getMotionEvent(mDownTime, eventTime, MotionEvent.ACTION_UP, x, y);

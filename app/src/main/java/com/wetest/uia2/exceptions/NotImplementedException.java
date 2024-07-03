@@ -21,7 +21,7 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.uiautomator.exceptions;
+package com.wetest.uia2.exceptions;
 
 import android.os.Build;
 

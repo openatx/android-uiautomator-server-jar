@@ -2,7 +2,7 @@
  * see <https://android.googlesource.com/platform//frameworks/support/+/48d9273f1facf771ff812a10d8bb46f6f8773ed4/test/uiautomator/uiautomator/src/main/java/androidx/test/uiautomator/AccessibilityNodeInfoDumper.java>
  */
 
-package com.github.uiautomator.stub;
+package com.wetest.uia2.stub;
 
 import android.graphics.Rect;
 import android.os.Build;
@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
 
-//import androidx.annotation.DoNotInline;
 import androidx.annotation.RequiresApi;
 
 /**
