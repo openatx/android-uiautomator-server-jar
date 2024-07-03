@@ -1,5 +1,6 @@
 package com.wetest.uia2.stub;
 
+import android.annotation.TargetApi;
 import android.app.UiAutomation;
 import android.os.Build;
 import android.util.Log;
@@ -10,11 +11,11 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
 
 import androidx.annotation.RequiresApi;
-import androidx.test.filters.SdkSuppress;
-import androidx.test.platform.app.InstrumentationRegistry;
+//import androidx.test.filters.SdkSuppress;
+//import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.util.Traces;
-import androidx.test.uiautomator.util.Traces.Section;
+//import androidx.test.uiautomator.util.Traces;
+//import androidx.test.uiautomator.util.Traces.Section;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import uiautomator.InstrumentShellWrapper;
 
 class AccessibilityNodeInfoDumper {
 
@@ -36,7 +39,7 @@ class AccessibilityNodeInfoDumper {
     private AccessibilityNodeInfoDumper() { }
 
     public static void dumpWindowHierarchy(UiDevice device, OutputStream out, int maxDepth) throws IOException {
-        try (Section ignored = Traces.trace("AccessibilityNodeInfoDumper.dumpWindowHierarchy")) {
+    //    try (Section ignored = Traces.trace("AccessibilityNodeInfoDumper.dumpWindowHierarchy")) {
             XmlSerializer serializer = Xml.newSerializer();
             serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
             serializer.setOutput(out, "UTF-8");
@@ -52,14 +55,15 @@ class AccessibilityNodeInfoDumper {
 
             serializer.endTag("", "hierarchy");
             serializer.endDocument();
-        }
+    //    }
     }
 
     static AccessibilityNodeInfo[] getWindowRoots(UiDevice device) {
         device.waitForIdle();
 
         Set<AccessibilityNodeInfo> roots = new HashSet<>();
-        UiAutomation uiAutomation = InstrumentationRegistry.getInstrumentation().getUiAutomation();
+//        UiAutomation uiAutomation = InstrumentationRegistry.getInstrumentation().getUiAutomation();
+        UiAutomation uiAutomation = UiDevice.getInstance(InstrumentShellWrapper.getInstance()).getUiAutomation();
 
         // Ensure the active window root is included.
         AccessibilityNodeInfo activeRoot = uiAutomation.getRootInActiveWindow();
@@ -82,7 +86,8 @@ class AccessibilityNodeInfoDumper {
         return roots.toArray(new AccessibilityNodeInfo[0]);
     }
 
-    @SdkSuppress(minSdkVersion = 21)
+//    @SdkSuppress(minSdkVersion = 21)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static List<AccessibilityWindowInfo> getWindows(UiAutomation uiAutomation) {
         // Support multi-display searches for API level 30 and up.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

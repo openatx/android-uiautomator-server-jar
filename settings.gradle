@@ -1,2 +1,4 @@
 include ':permission'
 include ':app'
+include ':uiautomator2'
+include ':uicore'

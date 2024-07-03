@@ -52,9 +52,12 @@ import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
 
 import com.github.uiautomator.ToastHelper;
-import com.github.uiautomator.exceptions.NotImplementedException;
-import com.github.uiautomator.stub.watcher.ClickUiObjectWatcher;
-import com.github.uiautomator.stub.watcher.PressKeysWatcher;
+import com.wetest.uia2.exceptions.NotImplementedException;
+import com.wetest.uia2.stub.watcher.ClickUiObjectWatcher;
+import com.wetest.uia2.stub.watcher.PressKeysWatcher;
+//import com.github.uiautomator.exceptions.NotImplementedException;
+//import com.github.uiautomator.stub.watcher.ClickUiObjectWatcher;
+//import com.github.uiautomator.stub.watcher.PressKeysWatcher;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -66,6 +69,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import uiautomator.InstrumentShellWrapper;
 
 
 public class AutomatorServiceImpl implements AutomatorService {
@@ -291,7 +296,8 @@ public class AutomatorServiceImpl implements AutomatorService {
 
     @Override
     public String dumpWindowHierarchy(boolean compressed, int maxDepth) {
-        device.setCompressedLayoutHierarchy(compressed);
+//        device.setCompressedLayoutHierarchy(compressed);
+        InstrumentShellWrapper.getInstance().setCompressedLayoutHierarchy(compressed);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             AccessibilityNodeInfoDumper.dumpWindowHierarchy(device, os, maxDepth);

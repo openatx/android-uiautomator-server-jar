@@ -28,7 +28,9 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 
-import com.github.uiautomator.stub.Log;
+import com.wetest.uia2.stub.Log;
+
+//import com.github.uiautomator.stub.Log;
 
 /**
  * Created with IntelliJ IDEA.
