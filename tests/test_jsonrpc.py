@@ -92,7 +92,7 @@ def test_swipe(jsonrpc: JSONRPCProxy):
     
 
 def test_swipePoints(jsonrpc: JSONRPCProxy):
-    result = jsonrpc.swipePoints([[100, 100], [200, 200]], 20)
+    result = jsonrpc.swipePoints([100, 100, 200, 200], 20)
     assert result == True
 
 
