@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fi.iki.elonen.NanoHTTPD;
+import uiautomator.InstrumentShellWrapper;
 
 public class AutomatorHttpServer extends NanoHTTPD {
 
@@ -77,8 +78,8 @@ public class AutomatorHttpServer extends NanoHTTPD {
                 } catch (NumberFormatException e) {
                 }
             }
-            File f = new File(InstrumentationRegistry.getTargetContext().getFilesDir(), "screenshot.png");
-            UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).takeScreenshot(f, scale, quality);
+            File f = new File(InstrumentShellWrapper.getInstance().getTargetContext().getFilesDir(), "screenshot.png");
+            UiDevice.getInstance(null).takeScreenshot(f, scale, quality);
 
             try {
                 return newChunkedResponse(Response.Status.OK, "image/png", new FileInputStream(f));

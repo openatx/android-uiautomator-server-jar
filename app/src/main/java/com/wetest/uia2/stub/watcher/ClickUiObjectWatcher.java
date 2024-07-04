@@ -53,7 +53,7 @@ public class ClickUiObjectWatcher extends SelectorWatcher {
         Log.d("ClickUiObjectWatcher triggered!");
         if (target != null) {
             try {
-                UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).findObject(target).click();
+                UiDevice.getInstance(null).findObject(target).click();
             } catch (UiObjectNotFoundException e) {
                 Log.d(e.getMessage());
             }

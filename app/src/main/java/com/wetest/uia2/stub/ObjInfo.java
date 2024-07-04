@@ -37,7 +37,7 @@ public class ObjInfo {
     }
 
     public static final ObjInfo getObjInfo(UiSelector selector) throws UiObjectNotFoundException {
-        return new ObjInfo(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).findObject(selector));
+        return new ObjInfo(UiDevice.getInstance(null).findObject(selector));
     }
 
 	public static final ObjInfo getObjInfo(UiObject2 obj) {

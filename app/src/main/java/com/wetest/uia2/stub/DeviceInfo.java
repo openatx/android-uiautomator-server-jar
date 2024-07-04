@@ -48,7 +48,7 @@ public class DeviceInfo {
     private DeviceInfo() {
         this._sdkInt = android.os.Build.VERSION.SDK_INT;
 
-        UiDevice ud = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiDevice ud = UiDevice.getInstance(null);
         this._currentPackageName = ud.getCurrentPackageName();
         this._displayWidth = ud.getDisplayWidth();
         this._displayHeight = ud.getDisplayHeight();
