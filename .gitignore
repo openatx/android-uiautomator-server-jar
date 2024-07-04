@@ -9,3 +9,6 @@ android-uiautomator-server.iml
 *.iml
 .settings/
 .project
+
+*.pyc
+__pycache__/
