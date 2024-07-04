@@ -36,6 +36,11 @@ public class InstrumentShellWrapper extends Instrumentation {
         return Bridge.getInstance().getContext();
     }
 
+    @Override
+    public Context getTargetContext() {
+        return Bridge.getInstance().getContext();
+    }
+
     public void destroy() {
         if (!mHandlerThread.isAlive()) {
             throw new IllegalStateException("Already disconnected!");
