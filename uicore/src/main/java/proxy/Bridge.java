@@ -7,6 +7,7 @@ import android.app.UiAutomation;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Looper;
@@ -15,6 +16,7 @@ import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.Display;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
 
 import java.io.BufferedReader;
@@ -111,6 +113,33 @@ public class Bridge {
             }
         }
         throw new DumpWindowException("display not found");
+    }
+
+    public String dumpXml(boolean allWindows, boolean verboseMode) {
+        InstrumentShellWrapper.getInstance().setCompressedLayoutHierarchy(!verboseMode);
+        UiAutomation uiAutomation = InstrumentShellWrapper.getInstance().getUiAutomation();
+        // >= Android 11
+        if (allWindows && BuildCompat.isR()) {
+            AccessibilityServiceInfo info = uiAutomation.getServiceInfo();
+            info.flags |= AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+            uiAutomation.setServiceInfo(info);
+            return AccessibilityNodeInfoDumper.dumpWindows(uiAutomation.getWindowsOnAllDisplays());
+        } else {
+            // 注意：这里代码执行顺序不同，如果顺序一致，info会返回空，原因未知
+            // http://aospxref.com/android-7.0.0_r7/xref/frameworks/base/cmds/uiautomator/cmds/uiautomator/src/com/android/commands/uiautomator/DumpCommand.java#86
+            Object displayManager = DisplayManagerGlobal.getInstance.call();
+            Display display = DisplayManagerGlobal.getRealDisplay.call(displayManager, Display.DEFAULT_DISPLAY);
+            int rotation = display.getRotation();
+            Point size = new Point();
+            display.getRealSize(size);
+
+            AccessibilityNodeInfo info = uiAutomation.getRootInActiveWindow();
+            if (info == null) {
+                System.err.println("ERROR: null root node returned by UiTestAutomationBridge.");
+                return "";
+            }
+            return AccessibilityNodeInfoDumper.dumpWindow(info, rotation, size.x, size.y);
+        }
     }
 
     public static final int BATTERY_STATUS_UNKNOWN = 1;
