@@ -1,0 +1,5 @@
+*.html
+*.pyc
+*.css
+__pycache__
+.pytest_cache
