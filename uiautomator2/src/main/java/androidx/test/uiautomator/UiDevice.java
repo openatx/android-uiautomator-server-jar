@@ -70,6 +70,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
+import mirror.android.hardware.display.DisplayManagerGlobal;
+import uiautomator.InstrumentShellWrapper;
 /**
  * UiDevice provides access to state information about the device.
  * You can also use this class to simulate user actions on the device,
@@ -288,10 +290,10 @@ public class UiDevice implements Searchable {
      */
     @NonNull
     public static UiDevice getInstance(@NonNull Instrumentation instrumentation) {
-        if (sInstance == null || !instrumentation.equals(sInstance.mInstrumentation)) {
+        if (sInstance == null || (instrumentation != null && !instrumentation.equals(sInstance.mInstrumentation))) {
             Log.i(TAG, String.format("Creating a new instance, old instance exists: %b",
                     (sInstance != null)));
-            sInstance = new UiDevice(instrumentation);
+            sInstance = new UiDevice(InstrumentShellWrapper.getInstance());
         }
         return sInstance;
     }
@@ -1182,9 +1184,9 @@ public class UiDevice implements Searchable {
     @Deprecated
     public void dumpWindowHierarchy(@NonNull String fileName) {
         File dumpFile = new File(fileName);
-        if (!dumpFile.isAbsolute()) {
-            dumpFile = mInstrumentation.getContext().getFileStreamPath(fileName);
-        }
+//        if (!dumpFile.isAbsolute()) {
+//            dumpFile = mInstrumentation.getContext().getFileStreamPath(fileName);
+//        }
         try {
             dumpWindowHierarchy(dumpFile);
         } catch (IOException e) {
@@ -1326,6 +1328,9 @@ public class UiDevice implements Searchable {
      */
     @SuppressLint("UnknownNullness") // Avoid unnecessary null checks from nullable testing APIs.
     public String getLauncherPackageName() {
+        if (true) {
+            return "";
+        }
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         PackageManager pm = mInstrumentation.getContext().getPackageManager();
@@ -1456,7 +1461,7 @@ public class UiDevice implements Searchable {
         return context;
     }
 
-    UiAutomation getUiAutomation() {
+    public UiAutomation getUiAutomation() {
         UiAutomation uiAutomation;
         int flags = Configurator.getInstance().getUiAutomationFlags();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -1465,7 +1470,8 @@ public class UiDevice implements Searchable {
             if (flags != Configurator.DEFAULT_UIAUTOMATION_FLAGS) {
                 Log.w(TAG, "UiAutomation flags not supported prior to API 24");
             }
-            uiAutomation = getInstrumentation().getUiAutomation();
+//            uiAutomation = getInstrumentation().getUiAutomation();
+            uiAutomation = InstrumentShellWrapper.getInstance().getUiAutomation();
         }
 
         if (uiAutomation == null) {
@@ -1497,11 +1503,11 @@ public class UiDevice implements Searchable {
         return uiAutomation;
     }
 
-    QueryController getQueryController() {
+    public QueryController getQueryController() {
         return mQueryController;
     }
 
-    InteractionController getInteractionController() {
+    public InteractionController getInteractionController() {
         return mInteractionController;
     }
 
@@ -1535,7 +1541,8 @@ public class UiDevice implements Searchable {
         static UiAutomation getUiAutomationWithRetry(Instrumentation instrumentation, int flags) {
             UiAutomation uiAutomation = null;
             for (int i = 0; i < MAX_UIAUTOMATION_RETRY; i++) {
-                uiAutomation = instrumentation.getUiAutomation(flags);
+//                uiAutomation = instrumentation.getUiAutomation(flags);
+                uiAutomation = InstrumentShellWrapper.getInstance().getUiAutomation(flags);
                 if (uiAutomation != null) {
                     break;
                 }
