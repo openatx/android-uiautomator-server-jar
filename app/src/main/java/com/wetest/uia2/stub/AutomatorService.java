@@ -41,21 +41,6 @@ public interface AutomatorService {
      * void runWatchersOnWindowsChange(boolean enabled); # Auto click permission popups, This will slow uiautomator speed
      */
 
-
-    /**
-     * It's to play a section music to test
-     *
-     * @return
-     */
-    boolean playSound(String path);
-
-    /**
-     * Capture toast or not
-     *
-     * @param enabled enable it of disable it
-     */
-    void setToastListener(boolean enabled);
-
     /**
      * It's to test if the service is alive.
      *
@@ -75,17 +60,16 @@ public interface AutomatorService {
     /**
      * get last toast text
      *
-     * @param cacheDuration milliseconds
      * @return the latest toast text or empty String
      */
-    String getLastToast(long cacheDuration);
+    String getLastToast();
 
     /**
      * clear the last toast text and set
      *
      * @return true if we clear the last toast text, false otherwise
      */
-    boolean clearLastToast();
+    void clearLastToast();
 
     /***************************************************************************
      * Below section contains all methods from UiDevice.

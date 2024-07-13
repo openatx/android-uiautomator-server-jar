@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
 
+import androidx.annotation.DoNotInline;
 import androidx.annotation.RequiresApi;
 
 /**
@@ -99,13 +100,13 @@ class AccessibilityNodeInfoHelper {
         private Api21Impl() {
         }
 
-//        @DoNotInline
+        @DoNotInline
         static void getBoundsInScreen(AccessibilityWindowInfo accessibilityWindowInfo,
                 Rect outBounds) {
             accessibilityWindowInfo.getBoundsInScreen(outBounds);
         }
 
-//        @DoNotInline
+        @DoNotInline
         static AccessibilityWindowInfo getWindow(AccessibilityNodeInfo accessibilityNodeInfo) {
             return accessibilityNodeInfo.getWindow();
         }

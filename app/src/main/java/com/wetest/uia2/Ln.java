@@ -11,7 +11,7 @@ public final class Ln {
     private static final String TAG = "uidumper";
     private static final String PREFIX = "[server] ";
 
-    enum Level {
+    public enum Level {
         VERBOSE, DEBUG, INFO, WARN, ERROR
     }
 

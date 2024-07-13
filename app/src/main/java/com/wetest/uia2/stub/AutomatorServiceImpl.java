@@ -26,19 +26,21 @@ package com.wetest.uia2.stub;
 import android.app.Instrumentation;
 import android.app.UiAutomation;
 import android.content.ClipData;
-import android.content.ClipboardManager;
+//import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-import androidx.test.platform.app.InstrumentationRegistry;
+import java.util.Set;
+import java.util.TimerTask;
+import android.view.accessibility.AccessibilityEvent;
+
 import androidx.test.uiautomator.Configurator;
 import androidx.test.uiautomator.Direction;
 import androidx.test.uiautomator.StaleObjectException;
@@ -52,40 +54,39 @@ import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
 
 import com.github.uiautomator.ToastHelper;
+import com.wetest.uia2.Ln;
 import com.wetest.uia2.exceptions.NotImplementedException;
 import com.wetest.uia2.stub.watcher.ClickUiObjectWatcher;
 import com.wetest.uia2.stub.watcher.PressKeysWatcher;
-//import com.github.uiautomator.exceptions.NotImplementedException;
-//import com.github.uiautomator.stub.watcher.ClickUiObjectWatcher;
-//import com.github.uiautomator.stub.watcher.PressKeysWatcher;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import proxy.Bridge;
 import uiautomator.InstrumentShellWrapper;
-
+import proxy.wrappers.ClipboardManager;
+import android.content.IOnPrimaryClipChangedListener;
 
 public class AutomatorServiceImpl implements AutomatorService {
 
     private final HashSet<String> watchers = new HashSet<>();
     private final ConcurrentHashMap<String, UiObject> uiObjects = new ConcurrentHashMap<>();
-    private SoundPool soundPool = new SoundPool(100, AudioManager.STREAM_MUSIC, 0);
 
     Handler handler = new Handler(Looper.getMainLooper());
 
-    private UiDevice device;
-    private UiAutomation uiAutomation;
-    private Instrumentation mInstrumentation;
-    private TouchController touchController;
-    ClipboardManager clipboard;
+    final private Instrumentation mInstrumentation = InstrumentShellWrapper.getInstance();;
+    final private UiDevice device = UiDevice.getInstance(mInstrumentation);
+    final private UiAutomation uiAutomation = device.getUiAutomation();
+
+    final private TouchController touchController = new TouchController(mInstrumentation);;
+    ClipboardManager clipboardManager;
+    private String lastToastMessage;
 
     public AutomatorServiceImpl() {
         // Reset Configurator Wait Timeout
@@ -101,57 +102,29 @@ public class AutomatorServiceImpl implements AutomatorService {
         // The problem is after set flags |= 8, the service always crash.
         // configurator.setUiAutomationFlags(configurator.getUiAutomationFlags() | AccessibilityServiceInfoCompat.FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY);
 
-        mInstrumentation = InstrumentShellWrapper.getInstance();
-        uiAutomation = UiDevice.getInstance(mInstrumentation).getUiAutomation();
-
-        //uiAutomation.setOnAccessibilityEventListener(new AccessibilityEventListener(device, watchers));
-
-        device = UiDevice.getInstance(mInstrumentation);
-        touchController = new TouchController(mInstrumentation);
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-//                AutomatorServiceImpl.this.clipboard = (ClipboardManager) mInstrumentation.getTargetContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                AutomatorServiceImpl.this.clipboard = (ClipboardManager) mInstrumentation.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        uiAutomation.setOnAccessibilityEventListener(event -> {
+            if (event.getEventType() == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED
+                && Objects.requireNonNull(event.getClassName()).toString().contains(android.widget.Toast.class.getName())) {
+                Ln.i("detect toast:" + event.getText());
+                String originText = event.getText().toString();
+                // originText is always wrapped with []. e.g. [This is toast]
+                lastToastMessage = originText.substring(1, originText.length() - 1);
             }
         });
-        // play music when loaded
-        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+
+        // FIXME(ssx): it's not working
+        Ln.i("clipboardManager inited");
+        clipboardManager = Bridge.getInstance().getClipboardManager();
+        clipboardManager.addPrimaryClipChangedListener(new IOnPrimaryClipChangedListener.Stub() {
             @Override
-            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                soundPool.play(sampleId, 1, 1, 1, 0, 1);
+            public void dispatchPrimaryClipChanged() {
+                Ln.i("clipboard changes to:"+clipboardManager.getText());
             }
         });
     }
 
     private UiAutomation getUiAutomation() {
         return uiAutomation;
-    }
-
-    /**
-     * It's to play a section music to test
-     *
-     * @return bool
-     */
-    @Override
-    public boolean playSound(String path) {
-        try {
-            soundPool.load(path, 1);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-
-    public void setToastListener(boolean enabled) {
-        if (enabled) {
-            // default uiAutomation serviceInfo.eventTypes is -1
-            // this might means watch all eventTypes
-            getUiAutomation().setOnAccessibilityEventListener(new AccessibilityEventListener(device, watchers));
-        } else {
-            getUiAutomation().setOnAccessibilityEventListener(null);
-        }
     }
 
     /**
@@ -187,18 +160,13 @@ public class AutomatorServiceImpl implements AutomatorService {
     }
 
     @Override
-    public String getLastToast(long cacheDuration) {
-        AccessibilityEventListener instance = AccessibilityEventListener.getInstance();
-        if (System.currentTimeMillis() < cacheDuration + instance.toastTime) {
-            return instance.toastMessage;
-        }
-        return null;
+    public String getLastToast() {
+        return lastToastMessage;
     }
 
     @Override
-    public boolean clearLastToast() {
-        AccessibilityEventListener.getInstance().toastMessage = null;
-        return true;
+    public void clearLastToast() {
+        lastToastMessage = null;
     }
 
     /**
@@ -345,7 +313,7 @@ public class AutomatorServiceImpl implements AutomatorService {
         try {
             screenshot.compress(Bitmap.CompressFormat.JPEG, quality, bos);
             bos.flush();
-            return Base64.getEncoder().encodeToString(bos.toByteArray());
+            return Base64.encodeToString(bos.toByteArray(), Base64.DEFAULT);
         } catch (IOException ioe) {
             Log.e("takeScreenshot error: " + ioe);
             return null;
@@ -1237,7 +1205,6 @@ public class AutomatorServiceImpl implements AutomatorService {
         return scrollable.scrollIntoView(targetObj.toUiSelector());
     }
 
-
     /**
      * Name an UiObject and cache it.
      *
@@ -1676,15 +1643,15 @@ public class AutomatorServiceImpl implements AutomatorService {
 
     @Override
     public void setClipboard(String label, String text) {
-        clipboard.setPrimaryClip(ClipData.newPlainText(label, text));
+        clipboardManager.setText(text);
     }
 
     @Override
     public String getClipboard() {
-        final ClipData clip = clipboard.getPrimaryClip();
-        if (clip != null && clip.getItemCount() > 0 && clipboard.getPrimaryClip().getItemAt(0).getText() != null) {
-            return clipboard.getPrimaryClip().getItemAt(0).getText().toString();
+        CharSequence s = clipboardManager.getText();
+        if (s == null) {
+            return null;
         }
-        return null;
+        return s.toString();
     }
 }
