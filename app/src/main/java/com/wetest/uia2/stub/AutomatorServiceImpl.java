@@ -26,7 +26,6 @@ package com.wetest.uia2.stub;
 import android.app.Instrumentation;
 import android.app.UiAutomation;
 import android.content.ClipData;
-//import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -1643,7 +1642,9 @@ public class AutomatorServiceImpl implements AutomatorService {
 
     @Override
     public void setClipboard(String label, String text) {
-        clipboardManager.setText(text);
+        android.content.ClipboardManager cm = (android.content.ClipboardManager) mInstrumentation.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        cm.setPrimaryClip(ClipData.newPlainText(label, text));
+//        clipboardManager.setText(text);
     }
 
     @Override
