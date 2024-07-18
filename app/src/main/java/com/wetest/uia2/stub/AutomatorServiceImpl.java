@@ -813,8 +813,10 @@ public class AutomatorServiceImpl implements AutomatorService {
      */
     @Override
     public boolean exist(Selector obj) {
-        if (obj.getChildOrSibling().length == 0 && obj.toBySelector() != null)
-            return device.wait(Until.hasObject(obj.toBySelector()), 0L);
+        // BySelector is missing the conversion for the index.
+        // UiSelector is fine
+        // see https://developer.android.com/reference/androidx/test/uiautomator/UiSelector
+        // ref https://github.com/openatx/uiautomator2/issues/778
         return device.findObject(obj.toUiSelector()).exists();
     }
 
@@ -827,16 +829,6 @@ public class AutomatorServiceImpl implements AutomatorService {
      */
     @Override
     public ObjInfo objInfo(Selector obj) throws UiObjectNotFoundException {
-        try {
-            final UiObject2 obj2 = obj.toUiObject2(); // to avoid a race condition
-            if (obj2 != null) {
-                return ObjInfo.getObjInfo(obj2);
-            }
-        } catch (StaleObjectException e) {
-            Log.d("objInfo got StaleObjectException " + e);
-            // HotFix(ssx): Here always raise StaleObjectException
-            // Refs: https://github.com/openatx/uiautomator2/issues/138
-        }
         return ObjInfo.getObjInfo(device.findObject(obj.toUiSelector()));
     }
 
