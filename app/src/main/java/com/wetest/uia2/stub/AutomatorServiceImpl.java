@@ -813,9 +813,14 @@ public class AutomatorServiceImpl implements AutomatorService {
      */
     @Override
     public boolean exist(Selector obj) {
+        if (obj.getChildOrSibling().length == 0 && (obj.getMask() & Selector.MASK_INDEX) == 0) {
+            return device.findObject(obj.toBySelector()) != null;
+        }
         // BySelector is missing the conversion for the index.
         // UiSelector is fine
-        // see https://developer.android.com/reference/androidx/test/uiautomator/UiSelector
+        // see
+        // https://developer.android.com/reference/androidx/test/uiautomator/BySelector
+        // https://developer.android.com/reference/androidx/test/uiautomator/UiSelector
         // ref https://github.com/openatx/uiautomator2/issues/778
         return device.findObject(obj.toUiSelector()).exists();
     }
@@ -829,6 +834,10 @@ public class AutomatorServiceImpl implements AutomatorService {
      */
     @Override
     public ObjInfo objInfo(Selector obj) throws UiObjectNotFoundException {
+        final UiObject2 obj2 = obj.toUiObject2();
+        if (obj2 != null) {
+            return ObjInfo.getObjInfo(obj2);
+        }
         return ObjInfo.getObjInfo(device.findObject(obj.toUiSelector()));
     }
 
