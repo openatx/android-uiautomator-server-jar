@@ -2,31 +2,20 @@ package proxy;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.TargetApi;
-import android.app.Service;
 import android.app.UiAutomation;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Looper;
-import android.os.ParcelFileDescriptor;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
@@ -34,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import mirror.android.app.ActivityThread;
 import mirror.android.hardware.display.DisplayManagerGlobal;
 import proxy.wrappers.ClipboardManager;
+import proxy.wrappers.InputManager;
 import proxy.wrappers.ServiceManager;
 import uiautomator.AccessibilityNodeInfoDumper;
 import uiautomator.AccessibilityNodeInfoDumper.DumpWindowException;
@@ -187,6 +177,10 @@ public class Bridge {
 
     public ClipboardManager getClipboardManager() {
         return serviceManager.getClipboardManager();
+    }
+
+    public InputManager getInputManager() {
+        return serviceManager.getInputManager();
     }
 
     public static byte[] takeScreenshot() throws IOException, InterruptedException {

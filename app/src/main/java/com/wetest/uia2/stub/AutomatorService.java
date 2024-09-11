@@ -1035,4 +1035,14 @@ public interface AutomatorService {
      * @return Clipboard data or null
      */
     String getClipboard();
+
+    /**
+     * paste from clipboard
+     */
+    void pasteClipboard();
+
+    /**
+     * clear focused text field
+     */
+    void clearInputText();
 }

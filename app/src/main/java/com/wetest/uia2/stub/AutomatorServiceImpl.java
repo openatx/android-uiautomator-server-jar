@@ -33,8 +33,11 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Base64;
+import android.view.InputDevice;
+import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.InputEvent;
 
 import java.util.Set;
 import java.util.TimerTask;
@@ -67,7 +70,9 @@ import java.util.Timer;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import mirror.android.os.ServiceManager;
 import proxy.Bridge;
+import proxy.wrappers.InputManager;
 import uiautomator.InstrumentShellWrapper;
 import proxy.wrappers.ClipboardManager;
 import android.content.IOnPrimaryClipChangedListener;
@@ -1645,7 +1650,7 @@ public class AutomatorServiceImpl implements AutomatorService {
     public void setClipboard(String label, String text) {
         android.content.ClipboardManager cm = (android.content.ClipboardManager) mInstrumentation.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         cm.setPrimaryClip(ClipData.newPlainText(label, text));
-//        clipboardManager.setText(text);
+        // cm.setText(text);
     }
 
     @Override
@@ -1655,5 +1660,31 @@ public class AutomatorServiceImpl implements AutomatorService {
             return null;
         }
         return s.toString();
+    }
+
+    @Override
+    public void pasteClipboard() {
+        injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_CTRL_LEFT, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+        injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_V, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+        injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_V, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+        injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_CTRL_LEFT, KeyEvent.META_NUM_LOCK_ON);
+    }
+
+    @Override
+    public void clearInputText() {
+        injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_CTRL_LEFT, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+        injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_A, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+        injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_A, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+        injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_CTRL_LEFT, KeyEvent.META_NUM_LOCK_ON);
+        injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+        injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+    }
+
+    private static void injectKeyEvent(int action, int keyCode, int metaState) {
+        long now = SystemClock.uptimeMillis();
+        KeyEvent event = new KeyEvent(now, now, action, keyCode, 0, metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0,
+                InputDevice.SOURCE_KEYBOARD);
+        InputManager inputManager = Bridge.getInstance().getInputManager();
+        inputManager.injectInputEvent(event, 0);
     }
 }
