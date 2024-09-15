@@ -27,6 +27,8 @@ import android.app.Instrumentation;
 import android.app.UiAutomation;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
@@ -1686,5 +1688,20 @@ public class AutomatorServiceImpl implements AutomatorService {
                 InputDevice.SOURCE_KEYBOARD);
         InputManager inputManager = Bridge.getInstance().getInputManager();
         inputManager.injectInputEvent(event, 0);
+    }
+
+    @Override
+    public boolean launchApp(String packageName) {
+        Context context = mInstrumentation.getContext();
+        PackageManager pm = context.getPackageManager();
+        Intent intent = pm.getLaunchIntentForPackage(packageName);
+        if (intent != null) {
+            context.startActivity(intent);
+            System.out.println("App started successfully!");
+            return true;
+        } else {
+            System.out.println("App not found.");
+            return false;
+        }
     }
 }
