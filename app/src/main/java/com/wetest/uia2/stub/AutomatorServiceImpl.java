@@ -267,9 +267,24 @@ public class AutomatorServiceImpl implements AutomatorService {
         return dumpWindowHierarchy(compressed, 50);
     }
 
+    void sendMotionEvent(int action) {
+        long now = System.currentTimeMillis();
+        long x = 0;
+        long y = 0;
+        MotionEvent motionEvent = MotionEvent.obtain(now, now, action, x, y, 0);
+        motionEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mInstrumentation.sendPointerSync(motionEvent);
+        motionEvent.recycle();
+    }
+
     @Override
     public String dumpWindowHierarchy(boolean compressed, int maxDepth) {
 //        device.setCompressedLayoutHierarchy(compressed);
+
+        // send mouse hover event to make webview redraw
+        sendMotionEvent(MotionEvent.ACTION_HOVER_MOVE);
+        sendMotionEvent(MotionEvent.ACTION_HOVER_EXIT);
+
         InstrumentShellWrapper.getInstance().setCompressedLayoutHierarchy(compressed);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
