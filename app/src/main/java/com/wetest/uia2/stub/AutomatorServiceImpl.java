@@ -30,6 +30,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Base64;
@@ -39,8 +40,12 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.InputEvent;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.Set;
 import java.util.TimerTask;
+
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.test.uiautomator.Configurator;
@@ -75,6 +80,7 @@ import proxy.Bridge;
 import proxy.wrappers.InputManager;
 import uiautomator.InstrumentShellWrapper;
 import proxy.wrappers.ClipboardManager;
+
 import android.content.IOnPrimaryClipChangedListener;
 
 public class AutomatorServiceImpl implements AutomatorService {
@@ -84,11 +90,10 @@ public class AutomatorServiceImpl implements AutomatorService {
 
     Handler handler = new Handler(Looper.getMainLooper());
 
-    final private Instrumentation mInstrumentation = InstrumentShellWrapper.getInstance();;
+    final private Instrumentation mInstrumentation = InstrumentShellWrapper.getInstance();
     final private UiDevice device = UiDevice.getInstance(mInstrumentation);
     final private UiAutomation uiAutomation = device.getUiAutomation();
-
-    final private TouchController touchController = new TouchController(mInstrumentation);;
+    final private TouchController touchController = new TouchController(mInstrumentation);
     ClipboardManager clipboardManager;
     private String lastToastMessage;
 
@@ -108,7 +113,7 @@ public class AutomatorServiceImpl implements AutomatorService {
 
         uiAutomation.setOnAccessibilityEventListener(event -> {
             if (event.getEventType() == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED
-                && Objects.requireNonNull(event.getClassName()).toString().contains(android.widget.Toast.class.getName())) {
+                    && Objects.requireNonNull(event.getClassName()).toString().contains(android.widget.Toast.class.getName())) {
                 Ln.i("detect toast:" + event.getText());
                 String originText = event.getText().toString();
                 // originText is always wrapped with []. e.g. [This is toast]
@@ -122,7 +127,7 @@ public class AutomatorServiceImpl implements AutomatorService {
         clipboardManager.addPrimaryClipChangedListener(new IOnPrimaryClipChangedListener.Stub() {
             @Override
             public void dispatchPrimaryClipChanged() {
-                Ln.i("clipboard changes to:"+clipboardManager.getText());
+                Ln.i("clipboard changes to:" + clipboardManager.getText());
             }
         });
     }
@@ -185,7 +190,7 @@ public class AutomatorServiceImpl implements AutomatorService {
         // The original implementation got bug here.
         // when y >= getDiaplayHeight() return false, but getDisplayHeight() is not right in infinity display
         //  return device.click(x, y);
-        if (x < 0 || y < 0){
+        if (x < 0 || y < 0) {
             return false;
         }
         touchController.touchDown(x, y);
@@ -194,13 +199,14 @@ public class AutomatorServiceImpl implements AutomatorService {
     }
 
     public boolean click(int x, int y, long milliseconds) {
-        if (x < 0 || y < 0){
+        if (x < 0 || y < 0) {
             return false;
         }
         touchController.touchDown(x, y);
         SystemClock.sleep(milliseconds);
         return touchController.touchUp(x, y);
     }
+
     /**
      * Performs a swipe from one coordinate to another coordinate. You can control the smoothness and speed of the swipe by specifying the number of steps. Each step execution is throttled to 5 milliseconds per step, so for a 100 steps, the swipe will take around 0.5 seconds to complete.
      *
@@ -1686,5 +1692,51 @@ public class AutomatorServiceImpl implements AutomatorService {
                 InputDevice.SOURCE_KEYBOARD);
         InputManager inputManager = Bridge.getInstance().getInputManager();
         inputManager.injectInputEvent(event, 0);
+    }
+
+    @Override
+    public String executeShellCommand(String command) {
+        StringBuilder output = new StringBuilder();
+        Process process = null;
+        BufferedReader reader = null;
+
+        try {
+            // 启动进程执行命令
+            process = Runtime.getRuntime().exec(command);
+
+            // 获取命令执行的输出
+            reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+
+            // 等待命令执行完成
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                // 如果命令执行失败，尝试读取错误流
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                StringBuilder errorOutput = new StringBuilder();
+                while ((line = errorReader.readLine()) != null) {
+                    errorOutput.append(line).append("\n");
+                }
+                errorReader.close();
+                throw new RuntimeException("Error executing command: " + errorOutput.toString());
+            }
+        } catch (Exception e) {
+            return "Exception occurred: " + e.getMessage();
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+                if (process != null) {
+                    process.destroy();
+                }
+            } catch (Exception e) {
+                // 忽略关闭资源时的异常
+            }
+        }
+        return output.toString();
     }
 }
