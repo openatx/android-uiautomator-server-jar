@@ -1045,4 +1045,6 @@ public interface AutomatorService {
      * clear focused text field
      */
     void clearInputText();
+
+    ShellCommandResult executeShellCommand(String command, long timeout);
 }
