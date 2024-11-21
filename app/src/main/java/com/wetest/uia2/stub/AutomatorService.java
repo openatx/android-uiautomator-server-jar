@@ -1046,5 +1046,5 @@ public interface AutomatorService {
      */
     void clearInputText();
 
-    String executeShellCommand(String command);
+    ShellCommandResult executeShellCommand(String command, long timeout);
 }

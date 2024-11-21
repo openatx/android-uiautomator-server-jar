@@ -23,11 +23,13 @@
 
 package com.wetest.uia2.stub;
 
+import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.app.UiAutomation;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
@@ -74,6 +76,7 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import mirror.android.os.ServiceManager;
 import proxy.Bridge;
@@ -1695,40 +1698,72 @@ public class AutomatorServiceImpl implements AutomatorService {
     }
 
     @Override
-    public String executeShellCommand(String command) {
-        StringBuilder output = new StringBuilder();
+    public ShellCommandResult executeShellCommand(String command, long timeout) {
+        StringBuilder stdout = new StringBuilder();
+        StringBuilder stderr = new StringBuilder();
         Process process = null;
         BufferedReader reader = null;
+        BufferedReader errorReader = null;
 
         try {
-            // 启动进程执行命令
             process = Runtime.getRuntime().exec(command);
 
-            // 获取命令执行的输出
+            // read stdout
             reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line).append("\n");
+            BufferedReader finalReader = reader;
+            Thread stdoutThread = new Thread(() -> {
+                try {
+                    String line;
+                    while ((line = finalReader.readLine()) != null) {
+                        stdout.append(line).append("\n");
+                    }
+                } catch (Exception e) {
+                }
+            });
+
+            // read stderr
+            errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            BufferedReader finalErrorReader = errorReader;
+            Thread stderrThread = new Thread(() -> {
+                try {
+                    String line;
+                    while ((line = finalErrorReader.readLine()) != null) {
+                        stderr.append(line).append("\n");
+                    }
+                } catch (Exception e) {
+                }
+            });
+
+            stdoutThread.start();
+            stderrThread.start();
+
+            // wait until timeout
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                boolean finished = process.waitFor(timeout, TimeUnit.MILLISECONDS);
+                if (!finished) {
+                    process.destroyForcibly();
+                    return new ShellCommandResult(stdout.toString(), stderr.toString(), -1);
+                }
+            } else {
+                process.waitFor();
             }
 
-            // 等待命令执行完成
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                // 如果命令执行失败，尝试读取错误流
-                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                StringBuilder errorOutput = new StringBuilder();
-                while ((line = errorReader.readLine()) != null) {
-                    errorOutput.append(line).append("\n");
-                }
-                errorReader.close();
-                throw new RuntimeException("Error executing command: " + errorOutput.toString());
-            }
+            // 等待线程完成
+            stdoutThread.join();
+            stderrThread.join();
+
+            int returnCode = process.exitValue();
+
+            return new ShellCommandResult(stdout.toString(), stderr.toString(), returnCode);
         } catch (Exception e) {
-            return "Exception occurred: " + e.getMessage();
+            return new ShellCommandResult("", "Exception occurred: " + e.getMessage(), -1);
         } finally {
             try {
                 if (reader != null) {
                     reader.close();
+                }
+                if (errorReader != null) {
+                    errorReader.close();
                 }
                 if (process != null) {
                     process.destroy();
@@ -1737,6 +1772,5 @@ public class AutomatorServiceImpl implements AutomatorService {
                 // 忽略关闭资源时的异常
             }
         }
-        return output.toString();
     }
 }
