@@ -49,15 +49,6 @@ public interface AutomatorService {
     String ping();
 
     /**
-     * show toast text in seconds
-     *
-     * @param text     the text to show
-     * @param duration text duration
-     * @return true if text is shown, false otherwise
-     */
-    boolean makeToast(String text, int duration);
-
-    /**
      * get last toast text
      *
      * @return the latest toast text or empty String

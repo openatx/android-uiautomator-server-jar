@@ -62,7 +62,6 @@ import androidx.test.uiautomator.UiScrollable;
 import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
 
-import com.github.uiautomator.ToastHelper;
 import com.wetest.uia2.Ln;
 import com.wetest.uia2.exceptions.NotImplementedException;
 import com.wetest.uia2.stub.watcher.ClickUiObjectWatcher;
@@ -157,18 +156,6 @@ public class AutomatorServiceImpl implements AutomatorService {
     @Override
     public DeviceInfo deviceInfo() {
         return DeviceInfo.getDeviceInfo();
-    }
-
-    @Override
-    public boolean makeToast(final String text, final int duration) {
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                ToastHelper.makeText(mInstrumentation.getTargetContext(), text, duration).show();
-            }
-        });
-        return true;
     }
 
     @Override
