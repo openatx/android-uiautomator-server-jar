@@ -29,6 +29,8 @@ import android.app.UiAutomation;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -36,6 +38,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Base64;
+import android.view.Display;
 import android.view.InputDevice;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -44,7 +47,10 @@ import android.view.InputEvent;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Set;
 import java.util.TimerTask;
 
@@ -311,6 +317,96 @@ public class AutomatorServiceImpl implements AutomatorService {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
+            screenshot.compress(Bitmap.CompressFormat.JPEG, quality, bos);
+            bos.flush();
+            return Base64.encodeToString(bos.toByteArray(), Base64.DEFAULT);
+        } catch (IOException ioe) {
+            Log.e("takeScreenshot error: " + ioe);
+            return null;
+        } finally {
+            try {
+                bos.close();
+            } catch (IOException ioe) {
+                // Ignore
+            }
+            screenshot.recycle();
+        }
+    }
+    @Override
+    public String takeScreenshot(float scale, int quality, int physicalDisplayId) throws NotImplementedException {
+        ParcelFileDescriptor pfd = null;
+        InputStream fis = null;
+        Bitmap screenshot = null;
+
+        String screenshotPath = "/data/local/tmp/screen_" + System.currentTimeMillis() + ".png";
+        File file = new File(screenshotPath);
+        try {
+            // 1. Screenshot of executing Shell commands
+            pfd = getUiAutomation().executeShellCommand(
+                    String.format("screencap -d %d -p %s", physicalDisplayId, screenshotPath)
+            );
+
+            // 2. Wait and read the screenshot file
+            for (int retry = 0; retry < 100; retry++) {
+                if(!file.exists()){
+                    SystemClock.sleep(10);
+                    continue;
+                }
+                SystemClock.sleep(80);
+                break;
+            }
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                fis = Files.newInputStream(Paths.get(screenshotPath));
+                screenshot = BitmapFactory.decodeStream(fis);
+            }
+            if (screenshot == null) {
+                return null;
+            }
+
+            // 3. Scaling and compression processing
+            return processBitmap(screenshot, scale, quality);
+        } catch (Exception e) {
+            return null;
+        } finally {
+            // 4. Clean up temporary files
+            try {
+                file.delete();
+            } catch (Exception ignored) {
+            }
+            if (pfd != null) {
+                try {
+                    pfd.close();
+                } catch (IOException ignored) {
+                }
+            }
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Processing bitmap, including scaling and compression
+     *
+     * @param screenshot original bitmap
+     * @param scale scaling ratio, range 0.1-1.0
+     * @param quality JPEG compression quality, range 1-100
+     * @return Base64 encoded JPEG image string
+     */
+    private String processBitmap(Bitmap screenshot, float scale, int quality) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            if (scale > 0) {
+                scale = Math.max(0.1f, Math.min(1.0f, scale));
+                int newWidth = (int) (screenshot.getWidth() * scale);
+                int newHeight = (int) (screenshot.getHeight() * scale);
+                screenshot = Bitmap.createScaledBitmap(screenshot, newWidth, newHeight, true);
+            }
+
+            quality = Math.max(1, Math.min(100, quality));
             screenshot.compress(Bitmap.CompressFormat.JPEG, quality, bos);
             bos.flush();
             return Base64.encodeToString(bos.toByteArray(), Base64.DEFAULT);
@@ -1759,5 +1855,12 @@ public class AutomatorServiceImpl implements AutomatorService {
                 // 忽略关闭资源时的异常
             }
         }
+    }
+
+    @Override
+    public Display[] getDisplays() {
+        Context context = InstrumentShellWrapper.getInstance().getContext();
+        DisplayManager displayManager = (DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
+        return displayManager.getDisplays();
     }
 }
