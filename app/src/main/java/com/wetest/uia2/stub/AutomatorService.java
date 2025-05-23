@@ -1038,4 +1038,14 @@ public interface AutomatorService {
     void clearInputText();
 
     ShellCommandResult executeShellCommand(String command, long timeout);
+
+    boolean multiClick(int[][] points);
+
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2), @JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    boolean multiClick(int[] x, int[] y, int[] pressTime);
+
+    boolean multiSwipe(int[][] gesture);
+
+    @JsonRpcErrors({@JsonRpcError(exception = UiObjectNotFoundException.class, code = ERROR_CODE_BASE - 2), @JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    boolean multiSwipe(int[] startX, int[] startY, int[] endX, int[] endY, int[] time);
 }
