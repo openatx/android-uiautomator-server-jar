@@ -22,7 +22,6 @@
  */
 
 package com.wetest.uia2.stub;
-
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
 import androidx.test.uiautomator.UiDevice;
@@ -56,6 +55,7 @@ public class Selector {
     private String _resourceId;
     private String _resourceIdMatches;
     private int _index;
+    private int _displayId;
     private int _instance;
     private Selector[] _childOrSiblingSelector = new Selector[]{};
     private String[] _childOrSibling = new String[]{};
@@ -86,7 +86,8 @@ public class Selector {
     public static final long MASK_RESOURCEID = 0x200000;
     public static final long MASK_RESOURCEIDMATCHES = 0x400000;
     public static final long MASK_INDEX = 0x800000;
-    public static final long MASK_INSTANCE = 0x01000000;
+    public static final long MASK_DISPLAYID = 0x01000000;
+    public static final long MASK_INSTANCE = 0x02000000;
 
     private final UiDevice device = UiDevice.getInstance(null);
 
@@ -152,6 +153,7 @@ public class Selector {
 
         return s;
     }
+
 
     public BySelector toBySelector() {
         BySelector s = null;
@@ -271,6 +273,12 @@ public class Selector {
             else
                 s = s.text(getText());
         }
+        if ((getMask() & Selector.MASK_TEXT) > 0) {
+            if (s == null)
+                s = By.displayId(getDisplayId());
+            else
+                s = s.displayId(getDisplayId());
+        }
         if ((getMask() & Selector.MASK_TEXTCONTAINS) > 0) {
             if (s == null)
                 s = By.textContains(getTextContains());
@@ -289,9 +297,9 @@ public class Selector {
             else
                 s = s.text(Pattern.compile(getTextMatches()));
         }
-
         return s;
     }
+
 
     public boolean checkBySelectorNull(Selector s) {
         if ((s.getMask() & Selector.MASK_INDEX) > 0 || (s.getMask() & Selector.MASK_INSTANCE) > 0) {
@@ -525,6 +533,14 @@ public class Selector {
 
     public void setIndex(int _index) {
         this._index = _index;
+    }
+
+    public int getDisplayId() {
+        return _displayId;
+    }
+
+    public void setDisplayId(int _displayId) {
+        this._displayId = _displayId;
     }
 
     public int getInstance() {
