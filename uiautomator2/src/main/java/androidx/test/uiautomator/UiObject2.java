@@ -398,15 +398,10 @@ public class UiObject2 implements Searchable {
      */
     @SuppressLint("UnknownNullness") // Avoid unnecessary null checks from nullable testing APIs.
     public String getText() {
-        AccessibilityNodeInfo info = getAccessibilityNodeInfo();
-        if (info == null) {
-            return null;
-        }
-
-        AccessibilityNodeInfo.RangeInfo rangeInfo = info.getRangeInfo();
+        AccessibilityNodeInfo.RangeInfo rangeInfo = getAccessibilityNodeInfo().getRangeInfo();
         CharSequence text = (rangeInfo != null)
                 ? Float.toString(rangeInfo.getCurrent())
-                : info.getText();
+                : getAccessibilityNodeInfo().getText();
 
         return (text != null) ? text.toString() : null;
     }
