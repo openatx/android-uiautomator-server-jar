@@ -111,7 +111,13 @@ class AccessibilityNodeInfoDumper {
             serializer.attribute("", "NAF", Boolean.toString(true));
         serializer.attribute("", "index", Integer.toString(index));
         try {
-            serializer.attribute("", "text", safeCharSeqToString(node.getText()));
+            final String text;
+            if (node.getRangeInfo() == null) {
+                text = safeCharSeqToString(node.getText());
+            } else {
+                text = Float.toString(node.getRangeInfo().getCurrent());
+            }
+            serializer.attribute("", "text", text);
             serializer.attribute("", "resource-id", safeCharSeqToString(node.getViewIdResourceName()));
             serializer.attribute("", "class", safeCharSeqToString(node.getClassName()));
             serializer.attribute("", "package", safeCharSeqToString(node.getPackageName()));
