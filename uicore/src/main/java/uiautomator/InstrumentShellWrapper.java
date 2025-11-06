@@ -70,7 +70,16 @@ public class InstrumentShellWrapper extends Instrumentation {
      */
 
     public void setCompressedLayoutHierarchy(boolean compressed) {
+        if (mUiAutomation == null) {
+            // UiAutomation not yet initialized, skip the layout hierarchy compression setting
+            return;
+        }
         AccessibilityServiceInfo info = mUiAutomation.getServiceInfo();
+        if (info == null) {
+            // Service info can be null if the UiAutomation is not connected or in certain edge cases
+            // Skip the layout hierarchy compression setting in this case
+            return;
+        }
         if (compressed)
             info.flags &= ~AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
         else
