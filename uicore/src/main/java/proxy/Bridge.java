@@ -90,8 +90,10 @@ public class Bridge {
             InstrumentShellWrapper.getInstance().setCompressedLayoutHierarchy(true);
         }
         AccessibilityServiceInfo info = uiAutomation.getServiceInfo();
-        info.flags |= AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
-        uiAutomation.setServiceInfo(info);
+        if (info != null) {
+            info.flags |= AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+            uiAutomation.setServiceInfo(info);
+        }
         SparseArray<List<AccessibilityWindowInfo>> allWindows = uiAutomation.getWindowsOnAllDisplays();
         if (allWindows.size() == 0) {
             throw new DumpWindowException("windows empty");
@@ -111,8 +113,10 @@ public class Bridge {
         // >= Android 11
         if (allWindows && BuildCompat.isR()) {
             AccessibilityServiceInfo info = uiAutomation.getServiceInfo();
-            info.flags |= AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
-            uiAutomation.setServiceInfo(info);
+            if (info != null) {
+                info.flags |= AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+                uiAutomation.setServiceInfo(info);
+            }
             return AccessibilityNodeInfoDumper.dumpWindows(uiAutomation.getWindowsOnAllDisplays());
         } else {
             // 注意：这里代码执行顺序不同，如果顺序一致，info会返回空，原因未知
