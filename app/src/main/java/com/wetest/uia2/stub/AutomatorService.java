@@ -24,6 +24,7 @@
 package com.wetest.uia2.stub;
 
 import android.os.RemoteException;
+import android.view.Display;
 
 import androidx.test.uiautomator.UiObjectNotFoundException;
 
@@ -176,6 +177,18 @@ public interface AutomatorService {
      */
     @JsonRpcErrors({@JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
     public String takeScreenshot(float scale, int quality) throws NotImplementedException;
+
+    /**
+     * Take a screenshot of current window and store it as JPEG The screenshot is adjusted per screen rotation
+     *
+     * @param scale
+     * @param quality
+     * @param physicalDisplayId
+     * @return base64 encoded image data
+     * @throws NotImplementedException
+     */
+    @JsonRpcErrors({@JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    public String takeScreenshot(float scale, int quality, int physicalDisplayId) throws Exception;
 
     /**
      * Disables the sensors and freezes the device rotation at its current rotation state, or enable it.
@@ -1038,4 +1051,7 @@ public interface AutomatorService {
     void clearInputText();
 
     ShellCommandResult executeShellCommand(String command, long timeout);
+
+    @JsonRpcErrors({@JsonRpcError(exception = NotImplementedException.class, code = ERROR_CODE_BASE - 3)})
+    Display[] getDisplays();
 }
