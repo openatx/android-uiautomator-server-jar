@@ -27,6 +27,7 @@ import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.app.UiAutomation;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -45,6 +46,7 @@ import android.view.InputEvent;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.TimerTask;
 
@@ -81,7 +83,6 @@ import mirror.android.os.ServiceManager;
 import proxy.Bridge;
 import proxy.wrappers.InputManager;
 import uiautomator.InstrumentShellWrapper;
-import proxy.wrappers.ClipboardManager;
 
 import android.content.IOnPrimaryClipChangedListener;
 
@@ -125,13 +126,8 @@ public class AutomatorServiceImpl implements AutomatorService {
 
         // FIXME(ssx): it's not working
         Ln.i("clipboardManager inited");
-        clipboardManager = Bridge.getInstance().getClipboardManager();
-        clipboardManager.addPrimaryClipChangedListener(new IOnPrimaryClipChangedListener.Stub() {
-            @Override
-            public void dispatchPrimaryClipChanged() {
-                Ln.i("clipboard changes to:" + clipboardManager.getText());
-            }
-        });
+        clipboardManager = (ClipboardManager) FakeContext.get().getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboardManager.addPrimaryClipChangedListener(() -> Ln.i("clipboard changes to:" + clipboardManager.getText()));
     }
 
     private UiAutomation getUiAutomation() {
@@ -1644,8 +1640,7 @@ public class AutomatorServiceImpl implements AutomatorService {
 
     @Override
     public void setClipboard(String label, String text) {
-        android.content.ClipboardManager cm = (android.content.ClipboardManager) mInstrumentation.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        cm.setPrimaryClip(ClipData.newPlainText(label, text));
+        clipboardManager.setPrimaryClip(ClipData.newPlainText(label, text));
         // cm.setText(text);
     }
 

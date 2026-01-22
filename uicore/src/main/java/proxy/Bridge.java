@@ -172,7 +172,7 @@ public class Bridge {
     // 不能确定这个方案是否会导致后台运行时是否足够稳定，十分怀疑perfdog也采用了此方案实现
     public Context getContext() {
         if (activityThread == null) {
-            Looper.prepareMainLooper();
+//            Looper.prepareMainLooper();
             activityThread = ActivityThread.systemMain.call();
             context = ActivityThread.getSystemContext.call(activityThread);
         }
