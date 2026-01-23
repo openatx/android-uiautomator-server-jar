@@ -291,8 +291,10 @@ public class AccessibilityNodeInfoDumper {
         for (int i = 0; i < count; ++i) {
             AccessibilityWindowInfo child = winfo.getChild(i);
             if (child == null) {
+                CharSequence parentTitle = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N 
+                        ? winfo.getTitle() : "<unknown>";
                 Log.i(LOGTAG, String.format("Null window child %d/%d, parent: %s", i, count,
-                        winfo.getTitle()));
+                        parentTitle));
                 continue;
             }
             dumpWindowRec(child, serializer, i, width, height, rotation);
