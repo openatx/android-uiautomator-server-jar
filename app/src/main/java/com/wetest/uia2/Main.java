@@ -5,6 +5,7 @@ import androidx.test.uiautomator.UiObjectNotFoundException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.genymobile.scrcpy.Workarounds;
 import com.googlecode.jsonrpc4j.ErrorResolver;
 import com.googlecode.jsonrpc4j.JsonRpcServer;
 import com.wetest.uia2.stub.AutomatorHttpServer;
@@ -45,6 +46,7 @@ public class Main {
 
     public static void runServer(int port) throws Exception {
         Ln.i("[UiAutomator2Server] Starting Server");
+        Workarounds.apply(true, true);
         // make sure Looper.prepareMainLooper() is called
         InstrumentShellWrapper.getInstance().getContext();
         UiDevice device = UiDevice.getInstance(InstrumentShellWrapper.getInstance());
