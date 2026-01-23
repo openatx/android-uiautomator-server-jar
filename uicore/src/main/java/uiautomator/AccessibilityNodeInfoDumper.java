@@ -19,6 +19,7 @@ package uiautomator;
 import android.graphics.Point;
 import android.graphics.Rect;
 //import android.hardware.display.DisplayManagerGlobal;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IInterface;
 import android.os.SystemClock;
@@ -272,7 +273,8 @@ public class AccessibilityNodeInfoDumper {
             int index, int width, int height, int rotation) throws IOException {
         serializer.startTag("", "window");
         serializer.attribute("", "index", Integer.toString(index));
-        final CharSequence title = winfo.getTitle();
+        final CharSequence title = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N 
+                ? winfo.getTitle() : null;
         serializer.attribute("", "title", title != null ? title.toString() : "");
         final Rect tmpBounds = new Rect();
         winfo.getBoundsInScreen(tmpBounds);
