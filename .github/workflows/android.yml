@@ -19,7 +19,7 @@ jobs:
     - name: set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
+        java-version: '11'
         distribution: 'oracle'
         cache: gradle
 

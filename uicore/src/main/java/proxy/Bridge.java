@@ -107,6 +107,7 @@ public class Bridge {
         throw new DumpWindowException("display not found");
     }
 
+    @TargetApi(Build.VERSION_CODES.R)
     public String dumpXml(boolean allWindows, boolean verboseMode) {
         InstrumentShellWrapper.getInstance().setCompressedLayoutHierarchy(!verboseMode);
         UiAutomation uiAutomation = InstrumentShellWrapper.getInstance().getUiAutomation();
