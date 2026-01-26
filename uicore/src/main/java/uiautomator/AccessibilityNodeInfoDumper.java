@@ -16,9 +16,11 @@
 
 package uiautomator;
 
+import android.annotation.TargetApi;
 import android.graphics.Point;
 import android.graphics.Rect;
 //import android.hardware.display.DisplayManagerGlobal;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IInterface;
 import android.os.SystemClock;
@@ -268,6 +270,7 @@ public class AccessibilityNodeInfoDumper {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
     private static void dumpWindowRec(AccessibilityWindowInfo winfo, XmlSerializer serializer,
             int index, int width, int height, int rotation) throws IOException {
         serializer.startTag("", "window");
