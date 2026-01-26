@@ -22,22 +22,6 @@ jobs:
         distribution: 'oracle'
         cache: gradle
 
-    - name: Cache Gradle wrapper
-      uses: actions/cache@v3
-      with:
-        path: ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-
-    - name: Cache Android build cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.android/build-cache
-          ~/.gradle/caches
-        key: ${{ runner.os }}-android-build-cache-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-android-build-cache-
-
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
