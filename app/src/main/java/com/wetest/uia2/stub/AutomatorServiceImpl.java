@@ -1761,4 +1761,122 @@ public class AutomatorServiceImpl implements AutomatorService {
             }
         }
     }
+
+    @Override
+    public boolean multiClick(int[][] points) {
+        if (points.length < 2) {
+            return false;
+        }
+        if (points[0].length < 2) {
+            return false;
+        }
+        int[] x = new int[points.length];
+        int[] y = new int[points.length];
+        int[] time = new int[points.length];
+        for (int i = 0; i < points.length; i++) {
+            x[i] = points[i][0];
+            y[i] = points[i][1];
+            if (points[0].length >= 3) {
+                time[i] = points[i][2];
+            } else {
+                time[i] = 50;
+            }
+        }
+        return multiClick(x, y, time);
+    }
+
+    @Override
+    public boolean multiClick(int[] x, int[] y, int[] pressTime) {
+        return multiClick(device.findObject(new UiSelector()), x, y, pressTime);
+    }
+
+    public boolean multiClick(UiObject obj, int[] x, int[] y, int[] pressTime) {
+        MotionEvent.PointerCoords[][] pointerCoordsArray = new MotionEvent.PointerCoords[x.length][];
+        for (int i = 0; i < x.length; i++) {
+            android.graphics.Point point = new android.graphics.Point(x[i], y[i]);
+            pointerCoordsArray[i] = getPointerCoords(point, point, pressTime[i] / 5);
+        }
+        return obj.performMultiPointerGesture(pointerCoordsArray);
+    }
+
+    @Override
+    public boolean multiSwipe(int[][] gesture) {
+        if (gesture.length < 2) {
+            return false;
+        }
+        if (gesture[0].length < 3) {
+            return false;
+        }
+        int[] startX = new int[gesture.length];
+        int[] startY = new int[gesture.length];
+        int[] endX = new int[gesture.length];
+        int[] endY = new int[gesture.length];
+        int[] time = new int[gesture.length];
+        for (int i = 0; i < gesture.length; i++) {
+            startX[i] = gesture[i][0];
+            startY[i] = gesture[i][1];
+            endX[i] = gesture[i][2];
+            endY[i] = gesture[i][3];
+            if (gesture[i].length >= 5) {
+                time[i] = gesture[i][4];
+            } else {
+                time[i] = 500;
+            }
+        }
+        return multiSwipe(startX, startY, endX, endY, time);
+    }
+
+    @Override
+    public boolean multiSwipe(int[] startX, int[] startY, int[] endX, int[] endY, int[] time) {
+        return multiSwipe(device.findObject(new UiSelector()), startX, startY, endX, endY, time);
+    }
+
+    public boolean multiSwipe(UiObject obj, int[] startX, int[] startY, int[] endX, int[] endY, int[] time) {
+        MotionEvent.PointerCoords[][] pointerCoordsArray = new MotionEvent.PointerCoords[startX.length][];
+        for (int i = 0; i < startX.length; i++) {
+            android.graphics.Point pointStart = new android.graphics.Point(startX[i], startY[i]);
+            android.graphics.Point pointEnd = new android.graphics.Point(endX[i], endY[i]);
+            pointerCoordsArray[i] = getPointerCoords(pointStart, pointEnd, time[i] / 5);
+        }
+        return obj.performMultiPointerGesture(pointerCoordsArray);
+    }
+
+    public MotionEvent.PointerCoords[] getPointerCoords(android.graphics.Point startPoint, android.graphics.Point endPoint, int steps) {
+        // avoid a divide by zero
+        if (steps == 0)
+            steps = 1;
+
+        final float stepX = (endPoint.x - startPoint.x) / steps;
+        final float stepY = (endPoint.y - startPoint.y) / steps;
+
+        int eventX, eventY;
+        eventX = startPoint.x;
+        eventY = startPoint.y;
+
+        // allocate for steps plus first down and last up
+        MotionEvent.PointerCoords[] points = new MotionEvent.PointerCoords[steps + 2];
+
+        // Include the first and last touch downs in the arrays of steps
+        for (int i = 0; i < steps + 1; i++) {
+            MotionEvent.PointerCoords p = new MotionEvent.PointerCoords();
+            p.x = eventX;
+            p.y = eventY;
+            p.pressure = 1;
+            p.size = 1;
+            points[i] = p;
+
+            eventX += stepX;
+            eventY += stepY;
+        }
+
+        // ending pointers coordinates
+        MotionEvent.PointerCoords p = new MotionEvent.PointerCoords();
+        p.x = endPoint.x;
+        p.y = endPoint.y;
+        p.pressure = 1;
+        p.size = 1;
+        points[steps + 1] = p;
+
+        return points;
+    }
 }
