@@ -887,6 +887,10 @@ public class AutomatorServiceImpl implements AutomatorService {
      */
     @Override
     public ObjInfo[] objInfoOfAllInstances(Selector obj) {
+        // Clear cache to prevent caching issues during list view reuse
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            uiAutomation.clearCache();
+        }
         int total = count(obj);
         ObjInfo objs[] = new ObjInfo[total];
         if ((obj.getMask() & Selector.MASK_INSTANCE) > 0 && total > 0) {
