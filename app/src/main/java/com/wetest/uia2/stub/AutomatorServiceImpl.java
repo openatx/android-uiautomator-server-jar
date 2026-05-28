@@ -1699,10 +1699,10 @@ public class AutomatorServiceImpl implements AutomatorService {
         if (intent != null) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             context.startActivity(intent);
-            System.out.println("App started successfully!");
+            Log.i("launchApp succeeded for package: " + packageName);
             return true;
         } else {
-            System.out.println("App not found.");
+            Log.e("launchApp failed, package not found: " + packageName);
             return false;
         }
     }
