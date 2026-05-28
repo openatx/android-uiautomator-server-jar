@@ -1697,6 +1697,7 @@ public class AutomatorServiceImpl implements AutomatorService {
         PackageManager pm = context.getPackageManager();
         Intent intent = pm.getLaunchIntentForPackage(packageName);
         if (intent != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             context.startActivity(intent);
             System.out.println("App started successfully!");
             return true;
