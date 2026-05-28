@@ -521,6 +521,9 @@ public class UiObject {
         if(node == null) {
             throw new UiObjectNotFoundException(mUiSelector.toString());
         }
+        if (node.getRangeInfo() != null) {
+            return Float.toString(node.getRangeInfo().getCurrent());
+        }
         return safeStringReturn(node.getText());
     }
 

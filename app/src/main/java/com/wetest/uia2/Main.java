@@ -5,6 +5,7 @@ import androidx.test.uiautomator.UiObjectNotFoundException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.genymobile.scrcpy.Workarounds;
 import com.googlecode.jsonrpc4j.ErrorResolver;
 import com.googlecode.jsonrpc4j.JsonRpcServer;
 import com.wetest.uia2.stub.AutomatorHttpServer;
@@ -12,6 +13,7 @@ import com.wetest.uia2.stub.AutomatorService;
 import com.wetest.uia2.stub.AutomatorServiceImpl;
 import com.wetest.uia2.stub.Log;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
@@ -33,8 +35,18 @@ public class Main {
         }
     }
 
+    public static void setupTmpdir() {
+        File tmpDir = new File("/data/local/tmp/u2");
+        if (!tmpDir.exists()) {
+            tmpDir.mkdirs();
+        }
+        Ln.i("tmpdir is " + tmpDir.getAbsolutePath());
+        System.setProperty("java.io.tmpdir", tmpDir.getAbsolutePath());
+    }
+
     public static void runServer(int port) throws Exception {
         Ln.i("[UiAutomator2Server] Starting Server");
+        Workarounds.apply(true, true);
         // make sure Looper.prepareMainLooper() is called
         InstrumentShellWrapper.getInstance().getContext();
         UiDevice device = UiDevice.getInstance(InstrumentShellWrapper.getInstance());
@@ -56,11 +68,13 @@ public class Main {
             }
         });
 
+        setupTmpdir();
+
         AutomatorHttpServer server = new AutomatorHttpServer(port);
         server.route("/jsonrpc/0", jrs);
         server.start();
 
-        Log.i("server started");
+        Ln.i("http server listening on *:" + port);
         while (server.isAlive()) {
             Thread.sleep(500);
         }

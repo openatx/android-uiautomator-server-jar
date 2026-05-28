@@ -90,8 +90,10 @@ public class Bridge {
             InstrumentShellWrapper.getInstance().setCompressedLayoutHierarchy(true);
         }
         AccessibilityServiceInfo info = uiAutomation.getServiceInfo();
-        info.flags |= AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
-        uiAutomation.setServiceInfo(info);
+        if (info != null) {
+            info.flags |= AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+            uiAutomation.setServiceInfo(info);
+        }
         SparseArray<List<AccessibilityWindowInfo>> allWindows = uiAutomation.getWindowsOnAllDisplays();
         if (allWindows.size() == 0) {
             throw new DumpWindowException("windows empty");
@@ -105,14 +107,17 @@ public class Bridge {
         throw new DumpWindowException("display not found");
     }
 
+    @TargetApi(Build.VERSION_CODES.R)
     public String dumpXml(boolean allWindows, boolean verboseMode) {
         InstrumentShellWrapper.getInstance().setCompressedLayoutHierarchy(!verboseMode);
         UiAutomation uiAutomation = InstrumentShellWrapper.getInstance().getUiAutomation();
         // >= Android 11
         if (allWindows && BuildCompat.isR()) {
             AccessibilityServiceInfo info = uiAutomation.getServiceInfo();
-            info.flags |= AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
-            uiAutomation.setServiceInfo(info);
+            if (info != null) {
+                info.flags |= AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+                uiAutomation.setServiceInfo(info);
+            }
             return AccessibilityNodeInfoDumper.dumpWindows(uiAutomation.getWindowsOnAllDisplays());
         } else {
             // 注意：这里代码执行顺序不同，如果顺序一致，info会返回空，原因未知
@@ -168,7 +173,7 @@ public class Bridge {
     // 不能确定这个方案是否会导致后台运行时是否足够稳定，十分怀疑perfdog也采用了此方案实现
     public Context getContext() {
         if (activityThread == null) {
-            Looper.prepareMainLooper();
+//            Looper.prepareMainLooper();
             activityThread = ActivityThread.systemMain.call();
             context = ActivityThread.getSystemContext.call(activityThread);
         }

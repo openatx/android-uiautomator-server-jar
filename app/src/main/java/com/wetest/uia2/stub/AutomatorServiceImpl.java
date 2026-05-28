@@ -23,15 +23,19 @@
 
 package com.wetest.uia2.stub;
 
+import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.app.UiAutomation;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Base64;
@@ -41,8 +45,13 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.InputEvent;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.TimerTask;
+
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.test.uiautomator.Configurator;
@@ -57,7 +66,6 @@ import androidx.test.uiautomator.UiScrollable;
 import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
 
-import com.github.uiautomator.ToastHelper;
 import com.wetest.uia2.Ln;
 import com.wetest.uia2.exceptions.NotImplementedException;
 import com.wetest.uia2.stub.watcher.ClickUiObjectWatcher;
@@ -71,12 +79,13 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import mirror.android.os.ServiceManager;
 import proxy.Bridge;
 import proxy.wrappers.InputManager;
 import uiautomator.InstrumentShellWrapper;
-import proxy.wrappers.ClipboardManager;
+
 import android.content.IOnPrimaryClipChangedListener;
 
 public class AutomatorServiceImpl implements AutomatorService {
@@ -86,11 +95,10 @@ public class AutomatorServiceImpl implements AutomatorService {
 
     Handler handler = new Handler(Looper.getMainLooper());
 
-    final private Instrumentation mInstrumentation = InstrumentShellWrapper.getInstance();;
+    final private Instrumentation mInstrumentation = InstrumentShellWrapper.getInstance();
     final private UiDevice device = UiDevice.getInstance(mInstrumentation);
     final private UiAutomation uiAutomation = device.getUiAutomation();
-
-    final private TouchController touchController = new TouchController(mInstrumentation);;
+    final private TouchController touchController = new TouchController(mInstrumentation);
     ClipboardManager clipboardManager;
     private String lastToastMessage;
 
@@ -110,7 +118,7 @@ public class AutomatorServiceImpl implements AutomatorService {
 
         uiAutomation.setOnAccessibilityEventListener(event -> {
             if (event.getEventType() == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED
-                && Objects.requireNonNull(event.getClassName()).toString().contains(android.widget.Toast.class.getName())) {
+                    && Objects.requireNonNull(event.getClassName()).toString().contains(android.widget.Toast.class.getName())) {
                 Ln.i("detect toast:" + event.getText());
                 String originText = event.getText().toString();
                 // originText is always wrapped with []. e.g. [This is toast]
@@ -120,13 +128,14 @@ public class AutomatorServiceImpl implements AutomatorService {
 
         // FIXME(ssx): it's not working
         Ln.i("clipboardManager inited");
-        clipboardManager = Bridge.getInstance().getClipboardManager();
-        clipboardManager.addPrimaryClipChangedListener(new IOnPrimaryClipChangedListener.Stub() {
-            @Override
-            public void dispatchPrimaryClipChanged() {
-                Ln.i("clipboard changes to:"+clipboardManager.getText());
-            }
-        });
+        clipboardManager = (ClipboardManager) FakeContext.get().getSystemService(Context.CLIPBOARD_SERVICE);
+//        clipboardManager.addPrimaryClipChangedListener(new IOnPrimaryClipChangedListener.Stub() {
+//            @Override
+//            public void dispatchPrimaryClipChanged() {
+//                Ln.i("clipboard changes to:" + clipboardManager.getText());
+//            }
+//        });
+        clipboardManager.addPrimaryClipChangedListener(() -> Ln.i("clipboard changes to:" + clipboardManager.getText()));
     }
 
     private UiAutomation getUiAutomation() {
@@ -154,18 +163,6 @@ public class AutomatorServiceImpl implements AutomatorService {
     }
 
     @Override
-    public boolean makeToast(final String text, final int duration) {
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                ToastHelper.makeText(mInstrumentation.getTargetContext(), text, duration).show();
-            }
-        });
-        return true;
-    }
-
-    @Override
     public String getLastToast() {
         return lastToastMessage;
     }
@@ -187,7 +184,7 @@ public class AutomatorServiceImpl implements AutomatorService {
         // The original implementation got bug here.
         // when y >= getDiaplayHeight() return false, but getDisplayHeight() is not right in infinity display
         //  return device.click(x, y);
-        if (x < 0 || y < 0){
+        if (x < 0 || y < 0) {
             return false;
         }
         touchController.touchDown(x, y);
@@ -196,13 +193,14 @@ public class AutomatorServiceImpl implements AutomatorService {
     }
 
     public boolean click(int x, int y, long milliseconds) {
-        if (x < 0 || y < 0){
+        if (x < 0 || y < 0) {
             return false;
         }
         touchController.touchDown(x, y);
         SystemClock.sleep(milliseconds);
         return touchController.touchUp(x, y);
     }
+
     /**
      * Performs a swipe from one coordinate to another coordinate. You can control the smoothness and speed of the swipe by specifying the number of steps. Each step execution is throttled to 5 milliseconds per step, so for a 100 steps, the swipe will take around 0.5 seconds to complete.
      *
@@ -891,6 +889,10 @@ public class AutomatorServiceImpl implements AutomatorService {
      */
     @Override
     public ObjInfo[] objInfoOfAllInstances(Selector obj) {
+        // Clear cache to prevent caching issues during list view reuse
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            uiAutomation.clearCache();
+        }
         int total = count(obj);
         ObjInfo objs[] = new ObjInfo[total];
         if ((obj.getMask() & Selector.MASK_INSTANCE) > 0 && total > 0) {
@@ -1650,8 +1652,7 @@ public class AutomatorServiceImpl implements AutomatorService {
 
     @Override
     public void setClipboard(String label, String text) {
-        android.content.ClipboardManager cm = (android.content.ClipboardManager) mInstrumentation.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        cm.setPrimaryClip(ClipData.newPlainText(label, text));
+        clipboardManager.setPrimaryClip(ClipData.newPlainText(label, text));
         // cm.setText(text);
     }
 
@@ -1702,6 +1703,82 @@ public class AutomatorServiceImpl implements AutomatorService {
         } else {
             System.out.println("App not found.");
             return false;
+        }
+    }
+  
+    public ShellCommandResult executeShellCommand(String command, long timeout) {
+        StringBuilder stdout = new StringBuilder();
+        StringBuilder stderr = new StringBuilder();
+        Process process = null;
+        BufferedReader reader = null;
+        BufferedReader errorReader = null;
+
+        try {
+            process = Runtime.getRuntime().exec(command);
+
+            // read stdout
+            reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader finalReader = reader;
+            Thread stdoutThread = new Thread(() -> {
+                try {
+                    String line;
+                    while ((line = finalReader.readLine()) != null) {
+                        stdout.append(line).append("\n");
+                    }
+                } catch (Exception e) {
+                }
+            });
+
+            // read stderr
+            errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            BufferedReader finalErrorReader = errorReader;
+            Thread stderrThread = new Thread(() -> {
+                try {
+                    String line;
+                    while ((line = finalErrorReader.readLine()) != null) {
+                        stderr.append(line).append("\n");
+                    }
+                } catch (Exception e) {
+                }
+            });
+
+            stdoutThread.start();
+            stderrThread.start();
+
+            // wait until timeout
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                boolean finished = process.waitFor(timeout, TimeUnit.MILLISECONDS);
+                if (!finished) {
+                    process.destroyForcibly();
+                    return new ShellCommandResult(stdout.toString(), stderr.toString(), -1);
+                }
+            } else {
+                process.waitFor();
+            }
+
+            // 等待线程完成
+            stdoutThread.join();
+            stderrThread.join();
+
+            int returnCode = process.exitValue();
+
+            return new ShellCommandResult(stdout.toString(), stderr.toString(), returnCode);
+        } catch (Exception e) {
+            return new ShellCommandResult("", "Exception occurred: " + e.getMessage(), -1);
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+                if (errorReader != null) {
+                    errorReader.close();
+                }
+                if (process != null) {
+                    process.destroy();
+                }
+            } catch (Exception e) {
+                // 忽略关闭资源时的异常
+            }
         }
     }
 }

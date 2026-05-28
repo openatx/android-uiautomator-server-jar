@@ -178,7 +178,7 @@ public final class Workarounds {
         }
     }
 
-    static Context getSystemContext() {
+    public static Context getSystemContext() {
         try {
             Method getSystemContextMethod = ACTIVITY_THREAD_CLASS.getDeclaredMethod("getSystemContext");
             return (Context) getSystemContextMethod.invoke(ACTIVITY_THREAD);
