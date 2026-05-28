@@ -29,6 +29,8 @@ import android.app.UiAutomation;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Handler;
@@ -1690,6 +1692,21 @@ public class AutomatorServiceImpl implements AutomatorService {
     }
 
     @Override
+    public boolean launchApp(String packageName) {
+        Context context = mInstrumentation.getContext();
+        PackageManager pm = context.getPackageManager();
+        Intent intent = pm.getLaunchIntentForPackage(packageName);
+        if (intent != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            context.startActivity(intent);
+            Log.i("launchApp succeeded for package: " + packageName);
+            return true;
+        } else {
+            Log.e("launchApp failed, package not found: " + packageName);
+            return false;
+        }
+    }
+  
     public ShellCommandResult executeShellCommand(String command, long timeout) {
         StringBuilder stdout = new StringBuilder();
         StringBuilder stderr = new StringBuilder();

@@ -1037,5 +1037,6 @@ public interface AutomatorService {
      */
     void clearInputText();
 
+    boolean launchApp(String packageName);
     ShellCommandResult executeShellCommand(String command, long timeout);
 }
