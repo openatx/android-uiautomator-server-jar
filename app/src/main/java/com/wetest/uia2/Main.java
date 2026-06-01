@@ -49,8 +49,6 @@ public class Main {
         Workarounds.apply(true, true);
         // make sure Looper.prepareMainLooper() is called
         InstrumentShellWrapper.getInstance().getContext();
-        UiDevice device = UiDevice.getInstance(InstrumentShellWrapper.getInstance());
-        device.wakeUp();
 
         JsonRpcServer jrs = new JsonRpcServer(new ObjectMapper(), new AutomatorServiceImpl(), AutomatorService.class);
         jrs.setShouldLogInvocationErrors(true);
