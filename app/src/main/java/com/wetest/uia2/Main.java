@@ -27,8 +27,21 @@ public class Main {
     private static final int CUSTOM_ERROR_CODE = -32001;
 
     public static void main(String... args) {
+        int port = 9008;
+        if (args.length > 0) {
+            try {
+                port = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid port: " + args[0] + ". Must be an integer between 1 and 65535.");
+                System.exit(1);
+            }
+            if (port < 1 || port > 65535) {
+                System.err.println("Invalid port: " + port + ". Must be between 1 and 65535.");
+                System.exit(1);
+            }
+        }
         try {
-            runServer(9008);
+            runServer(port);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
