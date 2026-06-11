@@ -37,3 +37,17 @@ def test_invalid_port_exits_with_friendly_message(adb_device, port, expected):
     exit_code, output = _run_main(adb_device, port)
     assert exit_code == 1, f"expected exit 1, got {exit_code}. output: {output}"
     assert expected in output, f"expected {expected!r} in output: {output}"
+
+
+def test_valid_port_starts_server(adb_device):
+    """Server should start (not exit immediately) when given a valid port."""
+    try:
+        exit_code, output = _run_main(adb_device, "19009", timeout=2)
+        pytest.fail(f"server exited unexpectedly with code {exit_code}: {output}")
+    except subprocess.TimeoutExpired:
+        pass  # server still running — correct
+    finally:
+        subprocess.run(
+            ["adb", "-s", adb_device.serial, "shell", "pkill -f 'com.wetest.uia2.Main'"],
+            capture_output=True,
+        )
