@@ -21,8 +21,9 @@ Now apk file can be found in `app/build/outputs/apk/debug/app-debug.apk`
 
 ```bash
 adb push app/build/outputs/apk/debug/app-debug.apk /data/local/tmp
-adb shell CLASSPATH=/data/local/tmp/app-debug.apk app_process / com.wetest.uia2.Main
+adb shell CLASSPATH=/data/local/tmp/app-debug.apk app_process / com.wetest.uia2.Main [port]
 ```
+If no port is provided, it uses port 9008
 
 ## Test server
 
