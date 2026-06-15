@@ -14,10 +14,10 @@ def adb_device():
 
 
 def _run_main(device, port_arg, timeout=5):
-    """Invoke Main on the device with port_arg; return (exit_code, combined_output)."""
+    """Invoke Main on the device with -p port_arg; return (exit_code, combined_output)."""
     result = subprocess.run(
         ["adb", "-s", device.serial, "shell",
-         f"CLASSPATH={_DEVICE_APK} app_process / {_MAIN} {shlex.quote(port_arg)} 2>&1; echo EXIT:$?"],
+         f"CLASSPATH={_DEVICE_APK} app_process / {_MAIN} -p {shlex.quote(port_arg)} 2>&1; echo EXIT:$?"],
         capture_output=True, text=True, timeout=timeout,
     )
     exit_code = None
@@ -54,7 +54,7 @@ def test_valid_port_starts_server(adb_device):
     finally:
         subprocess.run(
             ["adb", "-s", adb_device.serial, "shell",
-             f"pkill -f \"com.wetest.uia2.Main {_TEST_PORT}\""],
+             f"pkill -f \"com.wetest.uia2.Main -p {_TEST_PORT}\""],
             capture_output=True,
             timeout=10,
         )

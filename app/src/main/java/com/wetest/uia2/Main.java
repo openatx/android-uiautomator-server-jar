@@ -13,6 +13,13 @@ import com.wetest.uia2.stub.AutomatorService;
 import com.wetest.uia2.stub.AutomatorServiceImpl;
 import com.wetest.uia2.stub.Log;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -28,19 +35,48 @@ public class Main {
     private static final int DEFAULT_PORT = 9008;
 
     public static void main(String... args) {
+        Options options = new Options();
+        options.addOption(Option.builder("p")
+                .longOpt("port")
+                .hasArg()
+                .argName("port")
+                .desc("Port to listen on (1-65535, default: " + DEFAULT_PORT + ")")
+                .build());
+        options.addOption("h", "help", false, "Print this help message");
+
+        CommandLine cmd;
+        try {
+            cmd = new DefaultParser().parse(options, args);
+        } catch (ParseException e) {
+            System.err.println(e.getMessage());
+            new HelpFormatter().printHelp("uiautomator2-server", options);
+            System.exit(1);
+            return;
+        }
+
+        if (cmd.hasOption("h")) {
+            new HelpFormatter().printHelp("uiautomator2-server", options);
+            return;
+        }
+
         int port = DEFAULT_PORT;
-        if (args.length > 0) {
+        if (cmd.hasOption("p")) {
+            String portStr = cmd.getOptionValue("p");
             try {
-                port = Integer.parseInt(args[0]);
+                long parsed = Long.parseLong(portStr);
+                if (parsed < 1 || parsed > 65535) {
+                    System.err.println("Invalid port: " + portStr + ". Must be between 1 and 65535.");
+                    System.exit(1);
+                    return;
+                }
+                port = (int) parsed;
             } catch (NumberFormatException e) {
-                System.err.println("Invalid port: " + args[0] + ". Must be an integer between 1 and 65535.");
+                System.err.println("Invalid port: " + portStr + ". Must be an integer between 1 and 65535.");
                 System.exit(1);
-            }
-            if (port < 1 || port > 65535) {
-                System.err.println("Invalid port: " + port + ". Must be between 1 and 65535.");
-                System.exit(1);
+                return;
             }
         }
+
         try {
             runServer(port);
         } catch (Exception e) {
