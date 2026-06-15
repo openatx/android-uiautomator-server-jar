@@ -16,7 +16,6 @@ import com.wetest.uia2.stub.Log;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -36,12 +35,7 @@ public class Main {
 
     public static void main(String... args) {
         Options options = new Options();
-        options.addOption(Option.builder("p")
-                .longOpt("port")
-                .hasArg()
-                .argName("port")
-                .desc("Port to listen on (1-65535, default: " + DEFAULT_PORT + ")")
-                .build());
+        options.addOption("p", "port", true, "Port to listen on (1-65535, default: " + DEFAULT_PORT + ")");
         options.addOption("h", "help", false, "Print this help message");
 
         HelpFormatter formatter = new HelpFormatter();
