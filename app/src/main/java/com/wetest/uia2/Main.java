@@ -44,18 +44,19 @@ public class Main {
                 .build());
         options.addOption("h", "help", false, "Print this help message");
 
+        HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd;
         try {
             cmd = new DefaultParser().parse(options, args);
         } catch (ParseException e) {
             System.err.println(e.getMessage());
-            new HelpFormatter().printHelp("uiautomator2-server", options);
+            formatter.printHelp("uiautomator2-server", options);
             System.exit(1);
             return;
         }
 
         if (cmd.hasOption("h")) {
-            new HelpFormatter().printHelp("uiautomator2-server", options);
+            formatter.printHelp("uiautomator2-server", options);
             return;
         }
 
