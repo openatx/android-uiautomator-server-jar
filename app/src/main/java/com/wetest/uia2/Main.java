@@ -54,22 +54,20 @@ public class Main {
             return;
         }
 
-        int port = DEFAULT_PORT;
-        if (cmd.hasOption("p")) {
-            String portStr = cmd.getOptionValue("p");
-            try {
-                long parsed = Long.parseLong(portStr);
-                if (parsed < 1 || parsed > 65535) {
-                    System.err.println("Invalid port: " + portStr + ". Must be between 1 and 65535.");
-                    System.exit(1);
-                    return;
-                }
-                port = (int) parsed;
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid port: " + portStr + ". Must be an integer between 1 and 65535.");
+        String portStr = cmd.getOptionValue("p", String.valueOf(DEFAULT_PORT));
+        int port;
+        try {
+            long parsed = Long.parseLong(portStr);
+            if (parsed < 1 || parsed > 65535) {
+                System.err.println("Invalid port: " + portStr + ". Must be between 1 and 65535.");
                 System.exit(1);
                 return;
             }
+            port = (int) parsed;
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid port: " + portStr + ". Must be an integer between 1 and 65535.");
+            System.exit(1);
+            return;
         }
 
         try {
