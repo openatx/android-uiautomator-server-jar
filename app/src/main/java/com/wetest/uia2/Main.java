@@ -25,10 +25,24 @@ import uiautomator.InstrumentShellWrapper;
 public class Main {
     // http://www.jsonrpc.org/specification#error_object
     private static final int CUSTOM_ERROR_CODE = -32001;
+    private static final int DEFAULT_PORT = 9008;
 
     public static void main(String... args) {
+        int port = DEFAULT_PORT;
+        if (args.length > 0) {
+            try {
+                port = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid port: " + args[0] + ". Must be an integer between 1 and 65535.");
+                System.exit(1);
+            }
+            if (port < 1 || port > 65535) {
+                System.err.println("Invalid port: " + port + ". Must be between 1 and 65535.");
+                System.exit(1);
+            }
+        }
         try {
-            runServer(9008);
+            runServer(port);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
