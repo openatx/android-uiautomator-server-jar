@@ -37,8 +37,7 @@ jobs:
     - name: Copy Apks to dist folder
       run: |
         rm -fr dist && mkdir -p dist
-        mv app/build/outputs/apk/debug/app-debug.apk dist/app-uiautomator.apk
-        mv app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk dist/app-uiautomator-test.apk
+        mv app/build/outputs/apk/debug/app-debug.apk dist/u2.jar
     
     - name: Publish APKs
       run: |
