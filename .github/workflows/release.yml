@@ -14,12 +14,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 5
-    - name: set up JDK
-      uses: actions/setup-java@v3
+        fetch-depth: 50
+    - name: Set Up JDK
+      uses: actions/setup-java@v4
       with:
+        distribution: 'zulu'
         java-version: '17'
-        distribution: 'oracle'
         cache: gradle
 
     - name: Grant execute permission for gradlew
@@ -32,13 +32,12 @@ jobs:
       run: ./gradlew build
 
     - name: Build apk debug project (APK)
-      run: ./gradlew packageDebugAndroidTest
+      run: ./gradlew assembleDebug
 
     - name: Copy Apks to dist folder
       run: |
         rm -fr dist && mkdir -p dist
-        mv app/build/outputs/apk/debug/app-debug.apk dist/app-uiautomator.apk
-        mv app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk dist/app-uiautomator-test.apk
+        mv app/build/outputs/apk/debug/app-debug.apk dist/u2.jar
     
     - name: Publish APKs
       run: |
