@@ -13,7 +13,15 @@ that we can just write PC side script to write UIAutomator tests.
 
 ## Build APK
 
+Method 1:
+
 In `Android Studio` -> `Build` -> `Build App Bundle/APK` -> `Build APK`
+
+Method 2:
+
+```sh
+./gradlew assembleDebug
+```
 
 Now apk file can be found in `app/build/outputs/apk/debug/app-debug.apk`
 
@@ -23,6 +31,7 @@ Now apk file can be found in `app/build/outputs/apk/debug/app-debug.apk`
 adb push app/build/outputs/apk/debug/app-debug.apk /data/local/tmp
 adb shell CLASSPATH=/data/local/tmp/app-debug.apk app_process / com.wetest.uia2.Main [-p port]
 ```
+
 If no port is provided, it defaults to 9008. Use `-h` to see all options.
 
 ## Test server
