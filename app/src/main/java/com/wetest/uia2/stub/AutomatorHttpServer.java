@@ -42,6 +42,8 @@ import uiautomator.InstrumentShellWrapper;
 
 public class AutomatorHttpServer extends NanoHTTPD {
 
+    public static final int DEFAULT_PORT = 9008;
+
     public AutomatorHttpServer(int port) {
         super(port);
     }

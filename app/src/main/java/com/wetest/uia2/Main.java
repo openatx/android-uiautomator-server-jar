@@ -13,6 +13,12 @@ import com.wetest.uia2.stub.AutomatorService;
 import com.wetest.uia2.stub.AutomatorServiceImpl;
 import com.wetest.uia2.stub.Log;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -25,10 +31,47 @@ import uiautomator.InstrumentShellWrapper;
 public class Main {
     // http://www.jsonrpc.org/specification#error_object
     private static final int CUSTOM_ERROR_CODE = -32001;
+    private static final int DEFAULT_PORT = 9008;
 
     public static void main(String... args) {
+        Options options = new Options();
+        options.addOption("p", "port", true, "Port to listen on (1-65535, default: " + DEFAULT_PORT + ")");
+        options.addOption("h", "help", false, "Print this help message");
+
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd;
         try {
-            runServer(9008);
+            cmd = new DefaultParser().parse(options, args);
+        } catch (ParseException e) {
+            System.err.println(e.getMessage());
+            formatter.printHelp("uiautomator2-server", options);
+            System.exit(1);
+            return;
+        }
+
+        if (cmd.hasOption("h")) {
+            formatter.printHelp("uiautomator2-server", options);
+            return;
+        }
+
+        String portStr = cmd.getOptionValue("p", String.valueOf(DEFAULT_PORT));
+        int port;
+        try {
+            long parsed = Long.parseLong(portStr);
+            if (parsed < 1 || parsed > 65535) {
+                System.err.println("Invalid port: " + portStr + ". Must be between 1 and 65535.");
+                System.exit(1);
+                return;
+            }
+            port = (int) parsed;
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid port: " + portStr + ". Must be an integer between 1 and 65535.");
+            System.exit(1);
+            return;
+        }
+
+        try {
+            runServer(port);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
