@@ -41,7 +41,7 @@ jobs:
     
     - name: Publish APKs
       run: |
-        gh release create ${{ github.ref_name }} --notes "release" || true
-        gh release upload ${{ github.ref_name }} dist/*
+        gh release view ${{ github.ref_name }} > /dev/null 2>&1 || gh release create ${{ github.ref_name }} --generate-notes
+        gh release upload ${{ github.ref_name }} dist/* --clobber
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
