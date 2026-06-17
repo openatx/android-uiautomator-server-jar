@@ -12,3 +12,4 @@ android-uiautomator-server.iml
 
 *.pyc
 __pycache__/
+node_modules/

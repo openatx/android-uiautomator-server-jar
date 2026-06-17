@@ -1,0 +1,998 @@
+{
+  "methods": [
+    {
+      "name": "ping",
+      "category": "core",
+      "description": "It's to test if the service is alive.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "getLastToast",
+      "category": "core",
+      "description": "get last toast text",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "clearLastToast",
+      "category": "core",
+      "description": "clear the last toast text and set",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "deviceInfo",
+      "category": "uidevice",
+      "description": "Get the device info.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "click",
+      "category": "uidevice",
+      "description": "Perform a click at arbitrary coordinates specified by the user.",
+      "params": [
+        { "name": "x", "type": "int" },
+        { "name": "y", "type": "int" }
+      ],
+      "example": [0, 0]
+    },
+    {
+      "name": "click",
+      "category": "uidevice",
+      "description": "Perform a click at arbitrary coordinates specified by the user",
+      "params": [
+        { "name": "x", "type": "int" },
+        { "name": "y", "type": "int" },
+        { "name": "milliseconds", "type": "long" }
+      ],
+      "example": [0, 0, 5000]
+    },
+    {
+      "name": "drag",
+      "category": "uidevice",
+      "description": "Performs a swipe from one coordinate to another coordinate. You can control the smoothness and speed of the swipe by specifying the number of steps. Each step execution is throttled to 5 milliseconds per step, so for a 100 steps, the swipe will take around 0.5 seconds to complete.",
+      "params": [
+        { "name": "startX", "type": "int" },
+        { "name": "startY", "type": "int" },
+        { "name": "endX", "type": "int" },
+        { "name": "endY", "type": "int" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [0, 0, 0, 0, 0]
+    },
+    {
+      "name": "swipe",
+      "category": "uidevice",
+      "description": "Performs a swipe from one coordinate to another using the number of steps to determine smoothness and speed. Each step execution is throttled to 5ms per step. So for a 100 steps, the swipe will take about 1/2 second to complete.",
+      "params": [
+        { "name": "startX", "type": "int" },
+        { "name": "startY", "type": "int" },
+        { "name": "endX", "type": "int" },
+        { "name": "endY", "type": "int" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [0, 0, 0, 0, 0]
+    },
+    {
+      "name": "swipePoints",
+      "category": "uidevice",
+      "description": "Performs a swipe between points in the point array",
+      "params": [
+        { "name": "segments", "type": "int[]" },
+        { "name": "segmentSteps", "type": "int" }
+      ],
+      "example": [[100, 200], 0]
+    },
+    {
+      "name": "injectInputEvent",
+      "category": "uidevice",
+      "description": "Inject a low-level InputEvent (MotionEvent) to the input stream",
+      "params": [
+        { "name": "action", "type": "int" },
+        { "name": "x", "type": "float" },
+        { "name": "y", "type": "float" },
+        { "name": "metaState", "type": "int" }
+      ],
+      "example": [0, 1.0, 1.0, 0]
+    },
+    {
+      "name": "dumpWindowHierarchy",
+      "category": "uidevice",
+      "description": "Helper method used for debugging to dump the current window's layout hierarchy.",
+      "params": [
+        { "name": "compressed", "type": "boolean" }
+      ],
+      "example": [false]
+    },
+    {
+      "name": "dumpWindowHierarchy",
+      "category": "uidevice",
+      "description": "Helper method used for debugging to dump the current window's layout hierarchy",
+      "params": [
+        { "name": "compressed", "type": "boolean" },
+        { "name": "maxDepth", "type": "int" }
+      ],
+      "example": [false, 0]
+    },
+    {
+      "name": "takeScreenshot",
+      "category": "uidevice",
+      "description": "Take a screenshot of current window and store it as PNG The screenshot is adjusted per screen rotation",
+      "params": [
+        { "name": "filename", "type": "String" },
+        { "name": "scale", "type": "float" },
+        { "name": "quality", "type": "int" }
+      ],
+      "example": ["", 1.0, 0]
+    },
+    {
+      "name": "takeScreenshot",
+      "category": "uidevice",
+      "description": "Take a screenshot of current window and store it as JPEG The screenshot is adjusted per screen rotation",
+      "params": [
+        { "name": "scale", "type": "float" },
+        { "name": "quality", "type": "int" }
+      ],
+      "example": [1.0, 0]
+    },
+    {
+      "name": "freezeRotation",
+      "category": "uidevice",
+      "description": "Disables the sensors and freezes the device rotation at its current rotation state, or enable it.",
+      "params": [
+        { "name": "freeze", "type": "boolean" }
+      ],
+      "example": [false]
+    },
+    {
+      "name": "setOrientation",
+      "category": "uidevice",
+      "description": "Simulates orienting the device to the left/right/natural and also freezes rotation by disabling the sensors.",
+      "params": [
+        { "name": "dir", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "getLastTraversedText",
+      "category": "uidevice",
+      "description": "Retrieves the text from the last UI traversal event received.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "clearLastTraversedText",
+      "category": "uidevice",
+      "description": "Clears the text from the last UI traversal event.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "openNotification",
+      "category": "uidevice",
+      "description": "Opens the notification shade.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "openQuickSettings",
+      "category": "uidevice",
+      "description": "Opens the Quick Settings shade.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "hasWatcherTriggered",
+      "category": "watcher",
+      "description": "Checks if a specific registered UiWatcher has triggered. See registerWatcher(String, UiWatcher). If a UiWatcher runs and its checkForCondition() call returned true, then the UiWatcher is considered triggered. This is helpful if a watcher is detecting errors from ANR or crash dialogs and the test needs to know if a UiWatcher has been triggered.",
+      "params": [
+        { "name": "watcherName", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "hasAnyWatcherTriggered",
+      "category": "watcher",
+      "description": "Checks if any registered UiWatcher have triggered.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "registerClickUiObjectWatcher",
+      "category": "watcher",
+      "description": "Register a ClickUiObjectWatcher",
+      "params": [
+        { "name": "name", "type": "String" },
+        { "name": "conditions", "type": "Selector[]" },
+        { "name": "target", "type": "Selector" }
+      ],
+      "example": ["", [{"text": "A"}, {"text": "B"}], {"text": "Example"}]
+    },
+    {
+      "name": "registerPressKeyskWatcher",
+      "category": "watcher",
+      "description": "Register a PressKeysWatcher",
+      "params": [
+        { "name": "name", "type": "String" },
+        { "name": "conditions", "type": "Selector[]" },
+        { "name": "keys", "type": "String[]" }
+      ],
+      "example": ["", [{"text": "A"}, {"text": "B"}], ["a", "b"]]
+    },
+    {
+      "name": "removeWatcher",
+      "category": "watcher",
+      "description": "Removes a previously registered UiWatcher.",
+      "params": [
+        { "name": "name", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "resetWatcherTriggers",
+      "category": "watcher",
+      "description": "Resets a UiWatcher that has been triggered. If a UiWatcher runs and its checkForCondition() call returned true, then the UiWatcher is considered triggered.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "runWatchers",
+      "category": "watcher",
+      "description": "Force to run all watchers.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "getWatchers",
+      "category": "watcher",
+      "description": "Get all registered UiWatchers",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "pressKey",
+      "category": "uidevice",
+      "description": "Simulates a short press using key name.",
+      "params": [
+        { "name": "key", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "pressKeyCode",
+      "category": "uidevice",
+      "description": "Simulates a short press using a key code. See KeyEvent.",
+      "params": [
+        { "name": "keyCode", "type": "int" }
+      ],
+      "example": [0]
+    },
+    {
+      "name": "pressKeyCode",
+      "category": "uidevice",
+      "description": "Simulates a short press using a key code. See KeyEvent.",
+      "params": [
+        { "name": "keyCode", "type": "int" },
+        { "name": "metaState", "type": "int" }
+      ],
+      "example": [0, 0]
+    },
+    {
+      "name": "wakeUp",
+      "category": "uidevice",
+      "description": "This method simulates pressing the power button if the screen is OFF else it does nothing if the screen is already ON. If the screen was OFF and it just got turned ON, this method will insert a 500ms delay to allow the device time to wake up and accept input.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "sleep",
+      "category": "uidevice",
+      "description": "This method simply presses the power button if the screen is ON else it does nothing if the screen is already OFF.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "isScreenOn",
+      "category": "uidevice",
+      "description": "Checks the power manager if the screen is ON.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "waitForIdle",
+      "category": "uidevice",
+      "description": "Waits for the current application to idle.",
+      "params": [
+        { "name": "timeout", "type": "long" }
+      ],
+      "example": [5000]
+    },
+    {
+      "name": "waitForWindowUpdate",
+      "category": "uidevice",
+      "description": "Waits for a window content update event to occur. If a package name for the window is specified, but the current window does not have the same package name, the function returns immediately.",
+      "params": [
+        { "name": "packageName", "type": "String" },
+        { "name": "timeout", "type": "long" }
+      ],
+      "example": ["", 5000]
+    },
+    {
+      "name": "clearTextField",
+      "category": "uiobject",
+      "description": "Clears the existing text contents in an editable field. The UiSelector of this object must reference a UI element that is editable. When you call this method, the method first sets focus at the start edge of the field. The method then simulates a long-press to select the existing text, and deletes the selected text. If a \"Select-All\" option is displayed, the method will automatically attempt to use it to ensure full text selection. Note that it is possible that not all the text in the field is selected; for example, if the text contains separators such as spaces, slashes, at symbol etc. Also, not all editable fields support the long-press functionality.",
+      "params": [
+        { "name": "obj", "type": "Selector" }
+      ],
+      "example": [{"text": "Example"}]
+    },
+    {
+      "name": "getText",
+      "category": "uiobject",
+      "description": "Reads the text property of the UI element",
+      "params": [
+        { "name": "obj", "type": "Selector" }
+      ],
+      "example": [{"text": "Example"}]
+    },
+    {
+      "name": "setText",
+      "category": "uiobject",
+      "description": "Sets the text in an editable field, after clearing the field's content. The UiSelector selector of this object must reference a UI element that is editable. When you call this method, the method first simulates a click() on editable field to set focus. The method then clears the field's contents and injects your specified text into the field. If you want to capture the original contents of the field, call getText() first. You can then modify the text and use this method to update the field.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "text", "type": "String" }
+      ],
+      "example": [{"text": "Example"}, ""]
+    },
+    {
+      "name": "click",
+      "category": "uiobject",
+      "description": "Performs a click at the center of the visible bounds of the UI element represented by this UiObject.",
+      "params": [
+        { "name": "obj", "type": "Selector" }
+      ],
+      "example": [{"text": "Example"}]
+    },
+    {
+      "name": "click",
+      "category": "uiobject",
+      "description": "Clicks the bottom and right corner or top and left corner of the UI element",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "corner", "type": "String" }
+      ],
+      "example": [{"text": "Example"}, ""]
+    },
+    {
+      "name": "clickAndWaitForNewWindow",
+      "category": "uiobject",
+      "description": "Performs a click at the center of the visible bounds of the UI element represented by this UiObject and waits for window transitions. This method differ from click() only in that this method waits for a a new window transition as a result of the click. Some examples of a window transition: - launching a new activity - bringing up a pop-up menu - bringing up a dialog",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "timeout", "type": "long" }
+      ],
+      "example": [{"text": "Example"}, 5000]
+    },
+    {
+      "name": "longClick",
+      "category": "uiobject",
+      "description": "Long clicks the center of the visible bounds of the UI element",
+      "params": [
+        { "name": "obj", "type": "Selector" }
+      ],
+      "example": [{"text": "Example"}]
+    },
+    {
+      "name": "longClick",
+      "category": "uiobject",
+      "description": "Long clicks bottom and right corner of the UI element",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "corner", "type": "String" }
+      ],
+      "example": [{"text": "Example"}, ""]
+    },
+    {
+      "name": "dragTo",
+      "category": "uiobject",
+      "description": "Drags this object to a destination UiObject. The number of steps specified in your input parameter can influence the drag speed, and varying speeds may impact the results. Consider evaluating different speeds when using this method in your tests.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "destObj", "type": "Selector" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, {"text": "Example"}, 0]
+    },
+    {
+      "name": "dragTo",
+      "category": "uiobject",
+      "description": "Drags this object to arbitrary coordinates. The number of steps specified in your input parameter can influence the drag speed, and varying speeds may impact the results. Consider evaluating different speeds when using this method in your tests.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "destX", "type": "int" },
+        { "name": "destY", "type": "int" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, 0, 0, 0]
+    },
+    {
+      "name": "exist",
+      "category": "uiobject",
+      "description": "Check if view exists. This methods performs a waitForExists(long) with zero timeout. This basically returns immediately whether the view represented by this UiObject exists or not.",
+      "params": [
+        { "name": "obj", "type": "Selector" }
+      ],
+      "example": [{"text": "Example"}]
+    },
+    {
+      "name": "objInfo",
+      "category": "uiobject",
+      "description": "Get the object info.",
+      "params": [
+        { "name": "obj", "type": "Selector" }
+      ],
+      "example": [{"text": "Example"}]
+    },
+    {
+      "name": "count",
+      "category": "uiobject",
+      "description": "Get the count of the UiObject instances by the selector",
+      "params": [
+        { "name": "obj", "type": "Selector" }
+      ],
+      "example": [{"text": "Example"}]
+    },
+    {
+      "name": "objInfoOfAllInstances",
+      "category": "uiobject",
+      "description": "Get the info of all instance by the selector.",
+      "params": [
+        { "name": "obj", "type": "Selector" }
+      ],
+      "example": [{"text": "Example"}]
+    },
+    {
+      "name": "gesture",
+      "category": "uiobject",
+      "description": "Generates a two-pointer gesture with arbitrary starting and ending points.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "startPoint1", "type": "Point" },
+        { "name": "startPoint2", "type": "Point" },
+        { "name": "endPoint1", "type": "Point" },
+        { "name": "endPoint2", "type": "Point" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, {"x": 100, "y": 200}, {"x": 100, "y": 200}, {"x": 100, "y": 200}, {"x": 100, "y": 200}, 0]
+    },
+    {
+      "name": "pinchIn",
+      "category": "uiobject",
+      "description": "Performs a two-pointer gesture, where each pointer moves diagonally toward the other, from the edges to the center of this UiObject .",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "percent", "type": "int" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, 0, 0]
+    },
+    {
+      "name": "pinchOut",
+      "category": "uiobject",
+      "description": "Performs a two-pointer gesture, where each pointer moves diagonally opposite across the other, from the center out towards the edges of the this UiObject.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "percent", "type": "int" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, 0, 0]
+    },
+    {
+      "name": "swipe",
+      "category": "uiobject",
+      "description": "Performs the swipe up/down/left/right action on the UiObject",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "dir", "type": "String" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, "", 0]
+    },
+    {
+      "name": "swipe",
+      "category": "uiobject",
+      "description": "Performs the swipe up/down/left/right action on the UiObject",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "dir", "type": "String" },
+        { "name": "percent", "type": "float" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, "", 1.0, 0]
+    },
+    {
+      "name": "waitForExists",
+      "category": "uiobject",
+      "description": "Waits a specified length of time for a view to become visible. This method waits until the view becomes visible on the display, or until the timeout has elapsed. You can use this method in situations where the content that you want to select is not immediately displayed.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "timeout", "type": "long" }
+      ],
+      "example": [{"text": "Example"}, 5000]
+    },
+    {
+      "name": "waitUntilGone",
+      "category": "uiobject",
+      "description": "Waits a specified length of time for a view to become undetectable. This method waits until a view is no longer matchable, or until the timeout has elapsed. A view becomes undetectable when the UiSelector of the object is unable to find a match because the element has either changed its state or is no longer displayed. You can use this method when attempting to wait for some long operation to compete, such as downloading a large file or connecting to a remote server.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "timeout", "type": "long" }
+      ],
+      "example": [{"text": "Example"}, 5000]
+    },
+    {
+      "name": "flingBackward",
+      "category": "uiscrollable",
+      "description": "Performs a backwards fling action with the default number of fling steps (5). If the swipe direction is set to vertical, then the swipe will be performed from top to bottom. If the swipe direction is set to horizontal, then the swipes will be performed from left to right. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "isVertical", "type": "boolean" }
+      ],
+      "example": [{"text": "Example"}, false]
+    },
+    {
+      "name": "flingForward",
+      "category": "uiscrollable",
+      "description": "Performs a forward fling with the default number of fling steps (5). If the swipe direction is set to vertical, then the swipes will be performed from bottom to top. If the swipe direction is set to horizontal, then the swipes will be performed from right to left. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "isVertical", "type": "boolean" }
+      ],
+      "example": [{"text": "Example"}, false]
+    },
+    {
+      "name": "flingToBeginning",
+      "category": "uiscrollable",
+      "description": "Performs a fling gesture to reach the beginning of a scrollable layout element. The beginning can be at the top-most edge in the case of vertical controls, or the left-most edge for horizontal controls. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "isVertical", "type": "boolean" },
+        { "name": "maxSwipes", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, false, 0]
+    },
+    {
+      "name": "flingToEnd",
+      "category": "uiscrollable",
+      "description": "Performs a fling gesture to reach the end of a scrollable layout element. The end can be at the bottom-most edge in the case of vertical controls, or the right-most edge for horizontal controls. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "isVertical", "type": "boolean" },
+        { "name": "maxSwipes", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, false, 0]
+    },
+    {
+      "name": "scrollBackward",
+      "category": "uiscrollable",
+      "description": "Performs a backward scroll. If the swipe direction is set to vertical, then the swipes will be performed from top to bottom. If the swipe direction is set to horizontal, then the swipes will be performed from left to right. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "isVertical", "type": "boolean" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, false, 0]
+    },
+    {
+      "name": "scrollForward",
+      "category": "uiscrollable",
+      "description": "Performs a forward scroll with the default number of scroll steps (55). If the swipe direction is set to vertical, then the swipes will be performed from bottom to top. If the swipe direction is set to horizontal, then the swipes will be performed from right to left. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "isVertical", "type": "boolean" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, false, 0]
+    },
+    {
+      "name": "scrollToBeginning",
+      "category": "uiscrollable",
+      "description": "Scrolls to the beginning of a scrollable layout element. The beginning can be at the top-most edge in the case of vertical controls, or the left-most edge for horizontal controls. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "isVertical", "type": "boolean" },
+        { "name": "maxSwipes", "type": "int" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, false, 0, 0]
+    },
+    {
+      "name": "scrollToEnd",
+      "category": "uiscrollable",
+      "description": "Scrolls to the end of a scrollable layout element. The end can be at the bottom-most edge in the case of vertical controls, or the right-most edge for horizontal controls. Make sure to take into account devices configured with right-to-left languages like Arabic and Hebrew.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "isVertical", "type": "boolean" },
+        { "name": "maxSwipes", "type": "int" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, false, 0, 0]
+    },
+    {
+      "name": "scrollTo",
+      "category": "uiscrollable",
+      "description": "Perform a scroll forward action to move through the scrollable layout element until a visible item that matches the selector is found.",
+      "params": [
+        { "name": "obj", "type": "Selector" },
+        { "name": "targetObj", "type": "Selector" },
+        { "name": "isVertical", "type": "boolean" }
+      ],
+      "example": [{"text": "Example"}, {"text": "Example"}, false]
+    },
+    {
+      "name": "childByText",
+      "category": "uiobject",
+      "description": "Searches for child UI element within the constraints of this UiSelector selector. It looks for any child matching the childPattern argument that has a child UI element anywhere within its sub hierarchy that has a text attribute equal to text. The returned UiObject will point at the childPattern instance that matched the search and not at the identifying child element that matched the text attribute.",
+      "params": [
+        { "name": "collection", "type": "Selector" },
+        { "name": "child", "type": "Selector" },
+        { "name": "text", "type": "String" }
+      ],
+      "example": [{"text": "Example"}, {"text": "Example"}, ""]
+    },
+    {
+      "name": "childByText",
+      "category": "uiobject",
+      "description": "Searches for child UI element within the constraints of this UiSelector selector. It looks for any child matching the childPattern argument that has a child UI element anywhere within its sub hierarchy that has a text attribute equal to text. The returned UiObject will point at the childPattern instance that matched the search and not at the identifying child element that matched the text attribute.",
+      "params": [
+        { "name": "collection", "type": "Selector" },
+        { "name": "child", "type": "Selector" },
+        { "name": "text", "type": "String" },
+        { "name": "allowScrollSearch", "type": "boolean" }
+      ],
+      "example": [{"text": "Example"}, {"text": "Example"}, "", false]
+    },
+    {
+      "name": "childByDescription",
+      "category": "uiobject",
+      "description": "Searches for child UI element within the constraints of this UiSelector selector. It looks for any child matching the childPattern argument that has a child UI element anywhere within its sub hierarchy that has content-description text. The returned UiObject will point at the childPattern instance that matched the search and not at the identifying child element that matched the content description.",
+      "params": [
+        { "name": "collection", "type": "Selector" },
+        { "name": "child", "type": "Selector" },
+        { "name": "text", "type": "String" }
+      ],
+      "example": [{"text": "Example"}, {"text": "Example"}, ""]
+    },
+    {
+      "name": "childByDescription",
+      "category": "uiobject",
+      "description": "Searches for child UI element within the constraints of this UiSelector selector. It looks for any child matching the childPattern argument that has a child UI element anywhere within its sub hierarchy that has content-description text. The returned UiObject will point at the childPattern instance that matched the search and not at the identifying child element that matched the content description.",
+      "params": [
+        { "name": "collection", "type": "Selector" },
+        { "name": "child", "type": "Selector" },
+        { "name": "text", "type": "String" },
+        { "name": "allowScrollSearch", "type": "boolean" }
+      ],
+      "example": [{"text": "Example"}, {"text": "Example"}, "", false]
+    },
+    {
+      "name": "childByInstance",
+      "category": "uiobject",
+      "description": "Searches for child UI element within the constraints of this UiSelector. It looks for any child matching the childPattern argument that has a child UI element anywhere within its sub hierarchy that is at the instance specified. The operation is performed only on the visible items and no scrolling is performed in this case.",
+      "params": [
+        { "name": "collection", "type": "Selector" },
+        { "name": "child", "type": "Selector" },
+        { "name": "instance", "type": "int" }
+      ],
+      "example": [{"text": "Example"}, {"text": "Example"}, 0]
+    },
+    {
+      "name": "getChild",
+      "category": "uiobject",
+      "description": "Creates a new UiObject for a child view that is under the present UiObject.",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "selector", "type": "Selector" }
+      ],
+      "example": ["", {"text": "Example"}]
+    },
+    {
+      "name": "getFromParent",
+      "category": "uiobject",
+      "description": "Creates a new UiObject for a sibling view or a child of the sibling view, relative to the present UiObject.",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "selector", "type": "Selector" }
+      ],
+      "example": ["", {"text": "Example"}]
+    },
+    {
+      "name": "getUiObject",
+      "category": "uiobject",
+      "description": "Get a new UiObject from the selector.",
+      "params": [
+        { "name": "selector", "type": "Selector" }
+      ],
+      "example": [{"text": "Example"}]
+    },
+    {
+      "name": "removeUiObject",
+      "category": "uiobject",
+      "description": "Remove the UiObject from memory.",
+      "params": [
+        { "name": "obj", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "getUiObjects",
+      "category": "uiobject",
+      "description": "Get all named UiObjects.",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "clearTextField",
+      "category": "uiobject",
+      "description": "Clears the existing text contents in an editable field. The UiSelector of this object must reference a UI element that is editable. When you call this method, the method first sets focus at the start edge of the field. The method then simulates a long-press to select the existing text, and deletes the selected text. If a \"Select-All\" option is displayed, the method will automatically attempt to use it to ensure full text selection. Note that it is possible that not all the text in the field is selected; for example, if the text contains separators such as spaces, slashes, at symbol etc. Also, not all editable fields support the long-press functionality.",
+      "params": [
+        { "name": "obj", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "getText",
+      "category": "uiobject",
+      "description": "Reads the text property of the UI element",
+      "params": [
+        { "name": "obj", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "setText",
+      "category": "uiobject",
+      "description": "Sets the text in an editable field, after clearing the field's content. The UiSelector selector of this object must reference a UI element that is editable. When you call this method, the method first simulates a click() on editable field to set focus. The method then clears the field's contents and injects your specified text into the field. If you want to capture the original contents of the field, call getText() first. You can then modify the text and use this method to update the field.",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "text", "type": "String" }
+      ],
+      "example": ["", ""]
+    },
+    {
+      "name": "click",
+      "category": "uiobject",
+      "description": "Performs a click at the center of the visible bounds of the UI element represented by this UiObject.",
+      "params": [
+        { "name": "obj", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "click",
+      "category": "uiobject",
+      "description": "Clicks the bottom and right corner or top and left corner of the UI element",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "corner", "type": "String" }
+      ],
+      "example": ["", ""]
+    },
+    {
+      "name": "clickAndWaitForNewWindow",
+      "category": "uiobject",
+      "description": "Performs a click at the center of the visible bounds of the UI element represented by this UiObject and waits for window transitions. This method differ from click() only in that this method waits for a a new window transition as a result of the click. Some examples of a window transition: - launching a new activity - bringing up a pop-up menu - bringing up a dialog",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "timeout", "type": "long" }
+      ],
+      "example": ["", 5000]
+    },
+    {
+      "name": "longClick",
+      "category": "uiobject",
+      "description": "Long clicks the center of the visible bounds of the UI element",
+      "params": [
+        { "name": "obj", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "longClick",
+      "category": "uiobject",
+      "description": "Long clicks bottom and right corner of the UI element",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "corner", "type": "String" }
+      ],
+      "example": ["", ""]
+    },
+    {
+      "name": "dragTo",
+      "category": "uiobject",
+      "description": "Drags this object to a destination UiObject. The number of steps specified in your input parameter can influence the drag speed, and varying speeds may impact the results. Consider evaluating different speeds when using this method in your tests.",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "destObj", "type": "Selector" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": ["", {"text": "Example"}, 0]
+    },
+    {
+      "name": "dragTo",
+      "category": "uiobject",
+      "description": "Drags this object to arbitrary coordinates. The number of steps specified in your input parameter can influence the drag speed, and varying speeds may impact the results. Consider evaluating different speeds when using this method in your tests.",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "destX", "type": "int" },
+        { "name": "destY", "type": "int" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": ["", 0, 0, 0]
+    },
+    {
+      "name": "exist",
+      "category": "uiobject",
+      "description": "Check if view exists. This methods performs a waitForExists(long) with zero timeout. This basically returns immediately whether the view represented by this UiObject exists or not.",
+      "params": [
+        { "name": "obj", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "objInfo",
+      "category": "uiobject",
+      "description": "Get the object info.",
+      "params": [
+        { "name": "obj", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "gesture",
+      "category": "uiobject",
+      "description": "Generates a two-pointer gesture with arbitrary starting and ending points.",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "startPoint1", "type": "Point" },
+        { "name": "startPoint2", "type": "Point" },
+        { "name": "endPoint1", "type": "Point" },
+        { "name": "endPoint2", "type": "Point" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": ["", {"x": 100, "y": 200}, {"x": 100, "y": 200}, {"x": 100, "y": 200}, {"x": 100, "y": 200}, 0]
+    },
+    {
+      "name": "pinchIn",
+      "category": "uiobject",
+      "description": "Performs a two-pointer gesture, where each pointer moves diagonally toward the other, from the edges to the center of this UiObject .",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "percent", "type": "int" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": ["", 0, 0]
+    },
+    {
+      "name": "pinchOut",
+      "category": "uiobject",
+      "description": "Performs a two-pointer gesture, where each pointer moves diagonally opposite across the other, from the center out towards the edges of the this UiObject.",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "percent", "type": "int" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": ["", 0, 0]
+    },
+    {
+      "name": "swipe",
+      "category": "uiobject",
+      "description": "Performs the swipe up/down/left/right action on the UiObject",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "dir", "type": "String" },
+        { "name": "steps", "type": "int" }
+      ],
+      "example": ["", "", 0]
+    },
+    {
+      "name": "waitForExists",
+      "category": "uiobject",
+      "description": "Waits a specified length of time for a view to become visible. This method waits until the view becomes visible on the display, or until the timeout has elapsed. You can use this method in situations where the content that you want to select is not immediately displayed.",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "timeout", "type": "long" }
+      ],
+      "example": ["", 5000]
+    },
+    {
+      "name": "waitUntilGone",
+      "category": "uiobject",
+      "description": "Waits a specified length of time for a view to become undetectable. This method waits until a view is no longer matchable, or until the timeout has elapsed. A view becomes undetectable when the UiSelector of the object is unable to find a match because the element has either changed its state or is no longer displayed. You can use this method when attempting to wait for some long operation to compete, such as downloading a large file or connecting to a remote server.",
+      "params": [
+        { "name": "obj", "type": "String" },
+        { "name": "timeout", "type": "long" }
+      ],
+      "example": ["", 5000]
+    },
+    {
+      "name": "getConfigurator",
+      "category": "configurator",
+      "description": "Get Configurator",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "setConfigurator",
+      "category": "configurator",
+      "description": "Set Configurator.",
+      "params": [
+        { "name": "info", "type": "ConfiguratorInfo" }
+      ],
+      "example": [{"actionAcknowledgmentTimeout": 3000}]
+    },
+    {
+      "name": "setClipboard",
+      "category": "clipboard",
+      "description": "set Clipboard",
+      "params": [
+        { "name": "label", "type": "String" },
+        { "name": "text", "type": "String" }
+      ],
+      "example": ["", ""]
+    },
+    {
+      "name": "getClipboard",
+      "category": "clipboard",
+      "description": "get Clipboard data",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "pasteClipboard",
+      "category": "clipboard",
+      "description": "paste from clipboard",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "clearInputText",
+      "category": "clipboard",
+      "description": "clear focused text field",
+      "params": [],
+      "example": []
+    },
+    {
+      "name": "launchApp",
+      "category": "app",
+      "description": "",
+      "params": [
+        { "name": "packageName", "type": "String" }
+      ],
+      "example": [""]
+    },
+    {
+      "name": "executeShellCommand",
+      "category": "app",
+      "description": "",
+      "params": [
+        { "name": "command", "type": "String" },
+        { "name": "timeout", "type": "long" }
+      ],
+      "example": ["", 5000]
+    }
+  ],
+  "categories": {
+    "core": "Core (connection, device info, toast)",
+    "uidevice": "UiDevice (click, swipe, key, screenshot)",
+    "uiobject": "UiObject (find, text, click, drag)",
+    "uiscrollable": "UiScrollable (scroll, fling)",
+    "watcher": "Watcher",
+    "configurator": "Configurator",
+    "clipboard": "Clipboard",
+    "app": "App (launch, shell)"
+  }
+}
