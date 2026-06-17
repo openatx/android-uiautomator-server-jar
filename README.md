@@ -52,6 +52,38 @@ curl -X POST -d '{"jsonrpc": "2.0", "id": "1f0f2655716023254ed2b57ba4198815", "m
  'naturalOrientation': True}
 ```
 
+## JSON-RPC Test Tool
+
+交互式 JSON-RPC 方法测试脚本，用于快速调试和验证各个 RPC 方法。
+
+```bash
+# 交互模式（分类菜单选择方法 → 输入参数 → 查看结果）
+python3 tools/test_jsonrpc.py
+
+# 直接调用
+python3 tools/test_jsonrpc.py ping
+python3 tools/test_jsonrpc.py click 100 200
+python3 tools/test_jsonrpc.py dumpWindowHierarchy false
+```
+
+脚本自动执行 `adb forward tcp:9008 tcp:9008`，无需手动转发。
+
+方法定义文件 `tools/methods.json` 由 `AutomatorService.java` 接口同步生成，含所有方法的名称、参数类型、描述和示例值。
+
+## Sync Methods.json
+
+当 `AutomatorService.java` 接口有新增、删除或修改方法时，使用 sync-methods skill 同步更新 `tools/methods.json`。
+
+在 opencode 中对 AI 说：
+
+```
+同步 methods
+```
+
+AI 将自动：解析 Java 源码 → 提取所有方法 → 生成 methods.json → 校验 JSON 合法性。
+
+> 该 skill 位于 `.opencode/skills/sync-methods/SKILL.md`，纯 AI 驱动，无需额外脚本。
+
 # Resources
 - [Google UiAutomator Tutorial](https://developer.android.com/training/testing/ui-testing/uiautomator-testing?hl=zh-cn)
 - [Google UiAutomator API](https://developer.android.com/reference/kotlin/androidx/test/uiautomator/package-summary)
