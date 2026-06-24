@@ -70,7 +70,7 @@ def test_injectInputEvent(jsonrpc: JSONRPCProxy):
     
 
 def test_dumpWindowHierarchy(jsonrpc: JSONRPCProxy):
-    for args in [(True,), (False,), (False, 10), (False, 0)]:
+    for args in [(True,), (False,), (False, 10), (False, 0), (False, 10, True), (False, 10, False)]:
         result = jsonrpc.dumpWindowHierarchy(*args)
         assert result.startswith("<?xml") and result.rstrip().endswith("</hierarchy>")
 

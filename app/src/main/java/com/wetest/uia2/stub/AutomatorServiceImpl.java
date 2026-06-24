@@ -269,11 +269,16 @@ public class AutomatorServiceImpl implements AutomatorService {
 
     @Override
     public String dumpWindowHierarchy(boolean compressed, int maxDepth) {
+        return dumpWindowHierarchy(compressed, maxDepth, false);
+    }
+
+    @Override
+    public String dumpWindowHierarchy(boolean compressed, int maxDepth, boolean rootInActive) {
 //        device.setCompressedLayoutHierarchy(compressed);
         InstrumentShellWrapper.getInstance().setCompressedLayoutHierarchy(compressed);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            AccessibilityNodeInfoDumper.dumpWindowHierarchy(device, os, maxDepth);
+            AccessibilityNodeInfoDumper.dumpWindowHierarchy(device, os, maxDepth, rootInActive);
             // device.dumpWindowHierarchy(os);
             return os.toString("UTF-8");
         } catch (IOException e) {

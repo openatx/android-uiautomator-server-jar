@@ -117,6 +117,17 @@
       "example": [false, 0]
     },
     {
+      "name": "dumpWindowHierarchy",
+      "category": "uidevice",
+      "description": "Helper method used for debugging to dump the current window's layout hierarchy",
+      "params": [
+        { "name": "compressed", "type": "boolean" },
+        { "name": "maxDepth", "type": "int" },
+        { "name": "rootInActive", "type": "boolean" }
+      ],
+      "example": [false, 50, true]
+    },
+    {
       "name": "takeScreenshot",
       "category": "uidevice",
       "description": "Take a screenshot of current window and store it as PNG The screenshot is adjusted per screen rotation",

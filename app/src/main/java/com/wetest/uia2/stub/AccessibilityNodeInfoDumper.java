@@ -39,6 +39,10 @@ class AccessibilityNodeInfoDumper {
     private AccessibilityNodeInfoDumper() { }
 
     public static void dumpWindowHierarchy(UiDevice device, OutputStream out, int maxDepth) throws IOException {
+        dumpWindowHierarchy(device, out, maxDepth, false);
+    }
+
+    public static void dumpWindowHierarchy(UiDevice device, OutputStream out, int maxDepth, boolean rootInActive) throws IOException {
     //    try (Section ignored = Traces.trace("AccessibilityNodeInfoDumper.dumpWindowHierarchy")) {
             XmlSerializer serializer = Xml.newSerializer();
             serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
@@ -48,7 +52,7 @@ class AccessibilityNodeInfoDumper {
             serializer.startTag("", "hierarchy"); // TODO(allenhair): Should we use a namespace?
             serializer.attribute("", "rotation", Integer.toString(device.getDisplayRotation()));
 
-            for (AccessibilityNodeInfo root : getWindowRoots(device)) {
+            for (AccessibilityNodeInfo root : getWindowRoots(device, rootInActive)) {
                 dumpNodeRec(root, serializer, 0, device.getDisplayWidth(),
                             device.getDisplayHeight(), maxDepth);
             }
@@ -59,6 +63,10 @@ class AccessibilityNodeInfoDumper {
     }
 
     static AccessibilityNodeInfo[] getWindowRoots(UiDevice device) {
+        return getWindowRoots(device, false);
+    }
+
+    static AccessibilityNodeInfo[] getWindowRoots(UiDevice device, boolean rootInActive) {
         device.waitForIdle();
 
         Set<AccessibilityNodeInfo> roots = new HashSet<>();
@@ -71,6 +79,9 @@ class AccessibilityNodeInfoDumper {
             roots.add(activeRoot);
         } else {
             Log.w(TAG, "Active window root not found.");
+        }
+        if (rootInActive) {
+            return roots.toArray(new AccessibilityNodeInfo[0]);
         }
         // Support multi-window searches for API level 21 and up.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
