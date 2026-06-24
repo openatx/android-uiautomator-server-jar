@@ -155,6 +155,16 @@ public interface AutomatorService {
     String dumpWindowHierarchy(boolean compressed, int maxDepth);
 
     /**
+     * Helper method used for debugging to dump the current window's layout hierarchy
+     *
+     * @param compressed
+     * @param maxDepth
+     * @param rootInActive true to dump only the active window root, false to dump all window roots
+     * @return xml content
+     */
+    String dumpWindowHierarchy(boolean compressed, int maxDepth, boolean rootInActive);
+
+    /**
      * Take a screenshot of current window and store it as PNG The screenshot is adjusted per screen rotation
      *
      * @param filename where the PNG should be written to
