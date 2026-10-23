@@ -109,7 +109,10 @@ public class InstrumentShellWrapper extends Instrumentation {
                 mirror.android.app.UiAutomation.connectWithTimeout.call(mUiAutomation, flags,  CONNECT_TIMEOUT_MILLIS);
                 return mUiAutomation;
             } catch (Exception e) {
-                mirror.android.app.UiAutomation.destroy.call(mUiAutomation);
+                try {
+                    mirror.android.app.UiAutomation.destroy.call(mUiAutomation);
+                } catch (Exception ignored) {
+                }
                 mUiAutomation = null;
             }
         }

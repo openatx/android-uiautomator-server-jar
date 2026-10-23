@@ -50,6 +50,16 @@ public class AutomatorHttpServer extends NanoHTTPD {
 
     private Map<String, JsonRpcServer> router = new HashMap<String, JsonRpcServer>();
 
+    /**
+     * ByteArrayOutputStream that exposes its internal buffer so that the response
+     * does not need to be copied again with {@link ByteArrayOutputStream#toByteArray()}.
+     */
+    private static class BufferOutputStream extends ByteArrayOutputStream {
+        byte[] buffer() {
+            return buf;
+        }
+    }
+
     public void route(String uri, JsonRpcServer rpc) {
         router.put(uri, rpc);
     }
@@ -98,10 +108,14 @@ public class AutomatorHttpServer extends NanoHTTPD {
                 is = new ByteArrayInputStream(files.get("postData").getBytes());
             else
                 return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "Invalid http post data!");
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            BufferOutputStream os = new BufferOutputStream();
             try {
                 jsonRpcServer.handleRequest(is, os);
-                return newFixedLengthResponse(Response.Status.OK, "application/json", new ByteArrayInputStream(os.toByteArray()), os.size());
+                int length = os.size();
+                byte[] data = os.buffer();
+                os = null;
+                return newFixedLengthResponse(Response.Status.OK, "application/json",
+                        new ByteArrayInputStream(data, 0, length), length);
             } catch (IOException e) {
                 return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "Internal Server Error!!!");
             }

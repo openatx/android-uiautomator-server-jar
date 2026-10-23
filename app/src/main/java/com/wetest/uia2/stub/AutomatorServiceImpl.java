@@ -39,6 +39,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Base64;
+import android.util.Base64OutputStream;
 import android.view.InputDevice;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -74,6 +75,7 @@ import com.wetest.uia2.stub.watcher.PressKeysWatcher;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Timer;
@@ -89,6 +91,25 @@ import uiautomator.InstrumentShellWrapper;
 import android.content.IOnPrimaryClipChangedListener;
 
 public class AutomatorServiceImpl implements AutomatorService {
+
+    // Screenshots are memory intensive, serialize them to avoid multiple full-size
+    // bitmaps and base64 buffers living on the heap at the same time.
+    private static final Object SCREENSHOT_LOCK = new Object();
+    private static final int MAX_BASE64_BUFFER = 4 * 1024 * 1024;
+
+    /**
+     * ByteArrayOutputStream that exposes its internal buffer to avoid an extra
+     * array copy when converting the base64 payload to a String.
+     */
+    private static class BufferOutputStream extends ByteArrayOutputStream {
+        BufferOutputStream(int size) {
+            super(size);
+        }
+
+        byte[] buffer() {
+            return buf;
+        }
+    }
 
     private final HashSet<String> watchers = new HashSet<>();
     private final ConcurrentHashMap<String, UiObject> uiObjects = new ConcurrentHashMap<>();
@@ -313,26 +334,43 @@ public class AutomatorServiceImpl implements AutomatorService {
 
     @Override
     public String takeScreenshot(float scale, int quality) throws NotImplementedException {
-        Bitmap screenshot = getUiAutomation().takeScreenshot();
-        if (screenshot == null) {
-            return null;
-        }
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            screenshot.compress(Bitmap.CompressFormat.JPEG, quality, bos);
-            bos.flush();
-            return Base64.encodeToString(bos.toByteArray(), Base64.DEFAULT);
-        } catch (IOException ioe) {
-            Log.e("takeScreenshot error: " + ioe);
-            return null;
-        } finally {
-            try {
-                bos.close();
-            } catch (IOException ioe) {
-                // Ignore
+        synchronized (SCREENSHOT_LOCK) {
+            Bitmap screenshot = getUiAutomation().takeScreenshot();
+            if (screenshot == null) {
+                return null;
             }
-            screenshot.recycle();
+
+            Bitmap output = screenshot;
+            try {
+                float clampedScale = (scale <= 0f || scale > 1f) ? 1.0f : scale;
+                if (clampedScale < 1.0f) {
+                    int width = Math.max(1, Math.round(screenshot.getWidth() * clampedScale));
+                    int height = Math.max(1, Math.round(screenshot.getHeight() * clampedScale));
+                    output = Bitmap.createScaledBitmap(screenshot, width, height, true);
+                }
+
+                int clampedQuality = Math.max(1, Math.min(quality, 100));
+                // Size the base64 buffer conservatively to avoid repeated array copies.
+                int estimatedSize = Math.max(8192,
+                        Math.min(MAX_BASE64_BUFFER, output.getWidth() * output.getHeight() / 4));
+                BufferOutputStream bos = new BufferOutputStream(estimatedSize);
+                Base64OutputStream base64os = new Base64OutputStream(bos, Base64.NO_WRAP);
+                try {
+                    output.compress(Bitmap.CompressFormat.JPEG, clampedQuality, base64os);
+                    base64os.flush();
+                } finally {
+                    base64os.close();
+                }
+                return new String(bos.buffer(), 0, bos.size(), StandardCharsets.US_ASCII);
+            } catch (IOException ioe) {
+                Log.e("takeScreenshot error: " + ioe);
+                return null;
+            } finally {
+                if (output != screenshot) {
+                    output.recycle();
+                }
+                screenshot.recycle();
+            }
         }
     }
 

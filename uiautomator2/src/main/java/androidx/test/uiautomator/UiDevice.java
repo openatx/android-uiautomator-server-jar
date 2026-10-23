@@ -1296,9 +1296,13 @@ public class UiDevice implements Searchable {
             return false;
         }
         try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(storePath))) {
-            screenshot = Bitmap.createScaledBitmap(screenshot,
+            Bitmap scaled = Bitmap.createScaledBitmap(screenshot,
                     Math.round(scale * screenshot.getWidth()),
                     Math.round(scale * screenshot.getHeight()), false);
+            if (scaled != screenshot) {
+                screenshot.recycle();
+                screenshot = scaled;
+            }
             screenshot.compress(Bitmap.CompressFormat.PNG, quality, bos);
             bos.flush();
             return true;
@@ -1541,8 +1545,11 @@ public class UiDevice implements Searchable {
         static UiAutomation getUiAutomationWithRetry(Instrumentation instrumentation, int flags) {
             UiAutomation uiAutomation = null;
             for (int i = 0; i < MAX_UIAUTOMATION_RETRY; i++) {
-//                uiAutomation = instrumentation.getUiAutomation(flags);
-                uiAutomation = InstrumentShellWrapper.getInstance().getUiAutomation(flags);
+                try {
+                    uiAutomation = InstrumentShellWrapper.getInstance().getUiAutomation(flags);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to get UiAutomation - Retrying...", e);
+                }
                 if (uiAutomation != null) {
                     break;
                 }
