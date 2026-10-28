@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
+    namespace 'com.wetest.uicore'
     compileSdk 34
 
     defaultConfig {
@@ -19,6 +20,14 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        aidl true
+    }
+
+    lint {
+        // This is a runtime library; only the installable helper app has an effective target SDK.
+        disable 'ExpiredTargetSdkVersion'
     }
 }
 

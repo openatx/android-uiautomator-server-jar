@@ -31,7 +31,8 @@
     <string name="monitor_service_text">IP</string>
     <string name="agent_die">:agent is die</string>
     <string name="agent_live">:agent is live</string>
-    <string name="adb_keyboard_label">AdbKeyboard</string>
+    <string name="adb_keyboard_label">ATX Keyboard</string>
+    <string name="adb_keyboard_title">ATX Keyboard</string>
     <string name="stop_atxagent">停止ATXAGENT</string>
     <string name="start_atxagent">启动ATXAGENT</string>
     <string name="stop_uiautomator">停止UIAutomator</string>

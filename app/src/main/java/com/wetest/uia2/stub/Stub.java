@@ -121,8 +121,8 @@ public class Stub {
     }
 
     private void startMonitorService(Context context) {
-        Intent intent = new Intent("com.github.uiautomator.ACTION_START");
-        intent.setPackage("com.github.uiautomator"); // fix error: Service Intent must be explicit
+        Intent intent = new Intent("com.github.uiautomator2.ACTION_START");
+        intent.setPackage("com.github.uiautomator2"); // fix error: Service Intent must be explicit
         context.startService(intent);
     }
 
@@ -149,7 +149,7 @@ public class Stub {
     @Test
     @LargeTest
     public void testUIAutomatorStub() throws InterruptedException {
-        // stop the server with "am force-stop com.github.uiautomator"
+        // stop the server with "am force-stop com.github.uiautomator2"
         Log.i("server started");
         while (server.isAlive()) {
             if (!checkAccessibilityQuery()) {

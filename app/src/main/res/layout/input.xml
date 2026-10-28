@@ -1,9 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<android.inputmethodservice.KeyboardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/keyboard"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:keyPreviewLayout ="@layout/preview"
-    />
+    android:background="@drawable/keyboard_panel_bg"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/keyboard_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/keyboard_handle_bg" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:letterSpacing="0.15"
+            android:paddingTop="6dp"
+            android:paddingBottom="8dp"
+            android:text="@string/adb_keyboard_title"
+            android:textAllCaps="true"
+            android:textColor="#8E949F"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:background="#24262C" />
+
+    <android.inputmethodservice.KeyboardView
+        android:id="@+id/keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/transparent"
+        android:keyBackground="@drawable/key_background"
+        android:keyPreviewLayout="@layout/preview"
+        android:keyTextColor="#ECEEF2"
+        android:keyTextSize="14sp"
+        android:shadowColor="#00000000" />
+
+</LinearLayout>

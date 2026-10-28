@@ -13,6 +13,11 @@ android {
         versionName "2.2"
     }
 
+    lint {
+        // This is a library module; its targetSdk is not used by the installable helper app.
+        disable 'ExpiredTargetSdkVersion'
+    }
+
     buildTypes {
         release {
             minifyEnabled false

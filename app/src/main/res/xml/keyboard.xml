@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
     android:keyWidth="20%p"
-    android:horizontalGap="5dp"
-    android:verticalGap="5dp"
-    android:keyHeight="40dp">
+    android:horizontalGap="6dp"
+    android:verticalGap="8dp"
+    android:keyHeight="44dp">
 
     <Row>
         <Key
             android:codes="-7"
-            android:keyIcon="@drawable/ic_random_24dp"
+            android:keyIcon="@drawable/ic_random_24dp_light"
             android:keyWidth="25%p"
             android:keyEdgeFlags="left" />
         <Key

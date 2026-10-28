@@ -1,5 +1,7 @@
+[English](README.md) | [简体中文](README_CN.md)
+
 # Purpose
-[![Android CI](https://github.com/openatx/android-uiautomator-server/actions/workflows/android.yml/badge.svg)](https://github.com/openatx/android-uiautomator-server/actions/workflows/android.yml)
+[![Android CI](https://github.com/openatx/android-uiautomator-server-jar/actions/workflows/test.yml/badge.svg)](https://github.com/openatx/android-uiautomator-server-jar/actions/workflows/test.yml)
 
 [UIAutomator](http://developer.android.com/tools/testing/testing_ui.html) is a
 great tool to perform Android UI testing, but to do it, you have to write java
@@ -24,6 +26,14 @@ Method 2:
 ```
 
 Now apk file can be found in `app/build/outputs/apk/debug/app-debug.apk`
+
+## Install APK
+
+```bash
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+The application ID is `com.github.uiautomator2`. Installing the APK is required to use the bundled AdbKeyboard input method.
 
 ## Launch Jar server
 
@@ -54,35 +64,92 @@ curl -X POST -d '{"jsonrpc": "2.0", "id": "1f0f2655716023254ed2b57ba4198815", "m
 
 ## JSON-RPC Test Tool
 
-交互式 JSON-RPC 方法测试脚本，用于快速调试和验证各个 RPC 方法。
+Interactive JSON-RPC script for quickly debugging and verifying RPC methods.
 
 ```bash
-# 交互模式（分类菜单选择方法 → 输入参数 → 查看结果）
+# Interactive mode (pick a method from categorized menus, enter params, see results)
 python3 tools/test_jsonrpc.py
 
-# 直接调用
+# Direct invocation
 python3 tools/test_jsonrpc.py ping
 python3 tools/test_jsonrpc.py click 100 200
 python3 tools/test_jsonrpc.py dumpWindowHierarchy false
 ```
 
-脚本自动执行 `adb forward tcp:9008 tcp:9008`，无需手动转发。
+The script runs `adb forward tcp:9008 tcp:9008` automatically, no manual forwarding needed.
 
-方法定义文件 `tools/methods.json` 由 `AutomatorService.java` 接口同步生成，含所有方法的名称、参数类型、描述和示例值。
+Method definitions in `tools/methods.json` are generated from the `AutomatorService.java` interface, including the name, parameter types, description and example values of every method.
 
-## Sync Methods.json
+## Sync methods.json
 
-当 `AutomatorService.java` 接口有新增、删除或修改方法时，使用 sync-methods skill 同步更新 `tools/methods.json`。
+Whenever a method in `AutomatorService.java` is added, removed or changed, use the sync-methods skill to update `tools/methods.json`.
 
-在 opencode 中对 AI 说：
+Ask the AI in opencode:
 
 ```
-同步 methods
+sync methods
 ```
 
-AI 将自动：解析 Java 源码 → 提取所有方法 → 生成 methods.json → 校验 JSON 合法性。
+The AI will parse the Java sources → extract every method → generate methods.json → validate the JSON.
 
-> 该 skill 位于 `.opencode/skills/sync-methods/SKILL.md`，纯 AI 驱动，无需额外脚本。
+> The skill lives at `.opencode/skills/sync-methods/SKILL.md`. It is entirely AI driven and needs no extra scripts.
+
+# AdbKeyboard (ATX Keyboard)
+
+The APK bundles an input method for text input. After installation it appears in the IME list as **ATX Keyboard**, with the component name `com.github.uiautomator2/.AdbKeyboard`.
+
+> Upgrading from the old `com.github.uiautomator` package? The two packages are separate apps, so installing the new APK does not replace the old one. Uninstall the old app (`adb uninstall com.github.uiautomator`) to avoid duplicate ATX Keyboard entries in the IME list.
+
+## Enable and switch IME
+
+```bash
+adb shell ime enable com.github.uiautomator2/.AdbKeyboard
+adb shell ime set com.github.uiautomator2/.AdbKeyboard
+```
+
+## Input text via broadcast
+
+The `text` parameter should be base64-encoded UTF-8 text. Plain text is also accepted: if it is not valid base64 or does not decode to valid UTF-8, it is typed as-is.
+
+```bash
+TEXT=$(echo -n "Hello World" | base64)
+adb shell am broadcast -a ADB_KEYBOARD_INPUT_TEXT --es text "$TEXT"
+```
+
+Plain text works too, which is handy for Chinese input:
+
+```bash
+adb shell am broadcast -a ADB_KEYBOARD_INPUT_TEXT --es text "123你好" --ei interval 100
+```
+
+> If the text contains spaces, wrap the whole `am broadcast` command so `adb shell` does not split it:
+> `adb shell "am broadcast -a ADB_KEYBOARD_INPUT_TEXT --es text 'hello 世界'"`
+
+The optional `interval` parameter (in ms) controls the delay between characters. The default `0` commits the whole string at once:
+
+```bash
+# Type one character every 100ms
+adb shell am broadcast -a ADB_KEYBOARD_INPUT_TEXT --es text "$TEXT" --ei interval 100
+```
+
+> The target input field must be focused (an InputConnection must exist) for the broadcast to take effect.
+
+## Supported broadcast actions
+
+| action | extras | description |
+| --- | --- | --- |
+| `ADB_KEYBOARD_INPUT_TEXT` | `--es text <base64>`, optional `--ei interval <ms>` | Type text |
+| `ADB_KEYBOARD_SET_TEXT` | same as above | Clear the field, then type |
+| `ADB_KEYBOARD_CLEAR_TEXT` | - | Clear the current field |
+| `ADB_KEYBOARD_INPUT_KEYCODE` | `--ei code <keycode>` | Send a key event, e.g. `66` for Enter |
+| `ADB_KEYBOARD_EDITOR_CODE` | `--ei code <action>` | Perform an editor action, e.g. `3` for Search |
+| `ADB_KEYBOARD_GET_CLIPBOARD` | - | Read the clipboard; the result is returned as base64 |
+| `ADB_KEYBOARD_HIDE` / `ADB_KEYBOARD_SHOW` | - | Hide / show the input method |
+| `ADB_KEYBOARD_SMART_ENTER` | - | Smart Enter (follows the field's imeOptions) |
+
+## Hide the keyboard
+
+Flick down on the keyboard, or swipe down on the title bar.
 
 # Resources
 - [Google UiAutomator Tutorial](https://developer.android.com/training/testing/ui-testing/uiautomator-testing?hl=zh-cn)
@@ -104,6 +171,12 @@ If you have any idea, please email codeskyblue@gmail.com or [submit tickets](htt
 # Added features
 
 - [x] support unicode input
+- [x] AdbKeyboard supports a per-character input interval (`interval`)
+- [x] AdbKeyboard supports swipe-down to hide
+
+# License
+
+This project is released under the [MIT License](LICENSE).
 
 # Thanks to
 - [xiaocong](https://github.com/xiaocong)
