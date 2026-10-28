@@ -6,8 +6,8 @@
 
 import time
 import pytest
-import adbutils
-from conftest import JSONRPCError, JSONRPCProxy
+
+from conftest import JSONRPCError, JSONRPCProxy, get_device
 
 # copy from github.com/openatx/uiautomator2 _selector.py
 class Selector(dict):
@@ -108,7 +108,9 @@ class Selector(dict):
 @pytest.fixture(scope='function')
 def app():
     # https://github.com/openatx/u2testdemo/releases/download/0.1.0/app-debug.apk
-    dev = adbutils.device()
+    dev = get_device()
+    if 'com.example.u2testdemo' not in dev.shell("pm list packages"):
+        pytest.skip('被测示例应用 com.example.u2testdemo 未安装，参考 tests/README.md')
     dev.keyevent('WAKEUP')
     dev.app_start('com.example.u2testdemo')
     yield dev

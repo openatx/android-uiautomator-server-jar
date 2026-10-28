@@ -35,7 +35,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 ```bash
 adb push app/build/outputs/apk/debug/app-debug.apk /data/local/tmp
-adb shell CLASSPATH=/data/local/tmp/app-debug.apk app_process / com.wetest.uia2.Main [-p port]
+adb shell CLASSPATH=/data/local/tmp/app-debug.apk app_process / com.github.uiautomator2.Console [-p port]
 ```
 
 未指定端口时默认为 9008，使用 `-h` 查看所有选项。

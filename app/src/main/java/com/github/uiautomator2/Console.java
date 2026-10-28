@@ -1,4 +1,4 @@
-package com.wetest.uia2;
+package com.github.uiautomator2;
 
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObjectNotFoundException;
@@ -8,10 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.genymobile.scrcpy.Workarounds;
 import com.googlecode.jsonrpc4j.ErrorResolver;
 import com.googlecode.jsonrpc4j.JsonRpcServer;
+import com.wetest.uia2.Ln;
 import com.wetest.uia2.stub.AutomatorHttpServer;
 import com.wetest.uia2.stub.AutomatorService;
 import com.wetest.uia2.stub.AutomatorServiceImpl;
-import com.wetest.uia2.stub.Log;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -28,7 +28,7 @@ import java.util.List;
 import uiautomator.InstrumentShellWrapper;
 
 
-public class Main {
+public class Console {
     // http://www.jsonrpc.org/specification#error_object
     private static final int CUSTOM_ERROR_CODE = -32001;
     private static final int DEFAULT_PORT = 9008;

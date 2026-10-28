@@ -13,3 +13,7 @@ android-uiautomator-server.iml
 *.pyc
 __pycache__/
 node_modules/
+
+# python test env
+.venv-tests/
+.pytest_cache/

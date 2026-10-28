@@ -1,16 +1,27 @@
 # coding: utf-8
 # author: codeskyblue
 
+import os
+
 import pytest
 import adbutils
 import httpx
 
-_DEFAULT_PORT = 9008  # must match Main.DEFAULT_PORT in Main.java
+_DEFAULT_PORT = 9008  # must match Console.DEFAULT_PORT in Console.java
+
+
+def get_device() -> adbutils.AdbDevice:
+    """Pick the device from ANDROID_SERIAL, otherwise the only connected one."""
+    client = adbutils.AdbClient()
+    serial = os.environ.get("ANDROID_SERIAL")
+    if serial:
+        return client.device(serial)
+    return client.device()
 
 
 @pytest.fixture
 def device():
-    d = adbutils.AdbClient().device()
+    d = get_device()
     yield d
 
 

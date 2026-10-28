@@ -39,7 +39,7 @@ The application ID is `com.github.uiautomator2`. Installing the APK is required 
 
 ```bash
 adb push app/build/outputs/apk/debug/app-debug.apk /data/local/tmp
-adb shell CLASSPATH=/data/local/tmp/app-debug.apk app_process / com.wetest.uia2.Main [-p port]
+adb shell CLASSPATH=/data/local/tmp/app-debug.apk app_process / com.github.uiautomator2.Console [-p port]
 ```
 
 If no port is provided, it defaults to 9008. Use `-h` to see all options.
