@@ -309,10 +309,10 @@ public class UiDevice implements Searchable {
     @NonNull
     public Point getDisplaySizeDp() {
         Point p = getDisplaySize(Display.DEFAULT_DISPLAY);
-        Context context = getUiContext(Display.DEFAULT_DISPLAY);
-        int densityDpi = context.getResources().getConfiguration().densityDpi;
-        float density = (float) densityDpi / DisplayMetrics.DENSITY_DEFAULT;
-        return new Point(Math.round(p.x / density), Math.round(p.y / density));
+        Display display = getDisplayById(Display.DEFAULT_DISPLAY);
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getRealMetrics(metrics);
+        return new Point(Math.round(p.x / metrics.density), Math.round(p.y / metrics.density));
     }
 
     /**
