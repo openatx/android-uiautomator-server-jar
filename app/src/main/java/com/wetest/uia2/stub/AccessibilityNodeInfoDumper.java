@@ -262,6 +262,11 @@ class AccessibilityNodeInfoDumper {
         char ch;
         for (int i = 0; i < cs.length(); i++) {
             ch = cs.charAt(i);
+            // a surrogate pair (most emoji) is one valid character; only a lone surrogate is invalid
+            if (Character.isHighSurrogate(ch) && i + 1 < cs.length() && Character.isLowSurrogate(cs.charAt(i + 1))) {
+                ret.append(ch).append(cs.charAt(++i));
+                continue;
+            }
             // http://www.w3.org/TR/xml11/#charsets
             if ((ch >= 0x0 && ch <= 0x8)
                     || (ch >= 0xB && ch <= 0xC)
